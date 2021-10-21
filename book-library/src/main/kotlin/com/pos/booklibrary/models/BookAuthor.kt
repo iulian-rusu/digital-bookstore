@@ -1,10 +1,12 @@
 package com.pos.booklibrary.models
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import javax.persistence.*
 
 @Entity
 @Table(name = "book_authors")
 @IdClass(BookAuthorId::class)
+@JsonIgnoreProperties("id")
 class BookAuthor(
     @Id
     @Column(name = "isbn")
@@ -15,7 +17,7 @@ class BookAuthor(
     private var authorId: Long = -1,
 
     @Column(name = "author_index")
-    private var authorIndex: Long = 0
+    private var authorIndex: Long = -1
 ) {
     fun getIsbn() = isbn
 
@@ -32,8 +34,6 @@ class BookAuthor(
     fun getAuthorIndex() = authorIndex
 
     fun setAuthorIndex(value: Long) {
-        authorId = value
+        authorIndex = value
     }
-
-    fun getId() = BookAuthorId(isbn, authorId)
 }

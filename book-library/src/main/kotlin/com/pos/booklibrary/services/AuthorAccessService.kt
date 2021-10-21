@@ -6,6 +6,7 @@ import com.pos.booklibrary.persistence.AuthorRepository
 import com.pos.booklibrary.models.Author
 import com.pos.booklibrary.views.AuthorModelAssembler
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.hateoas.CollectionModel
 import org.springframework.hateoas.EntityModel
 import org.springframework.hateoas.IanaLinkRelations
@@ -32,17 +33,18 @@ class AuthorAccessService : AuthorAccessInterface {
             )
         }
 
-    override fun getAuthor(id: Long): ResponseEntity<EntityModel<Author>> = authorRepository.findById(id)
-        .run {
-            if (isPresent)
-                ResponseEntity.ok(authorAssembler.toModel(get()))
-            else
-                ResponseEntity.notFound().build()
-        }
+    override fun getAuthor(id: Long): ResponseEntity<EntityModel<Author>> = authorRepository.findByIdOrNull(id)
+        ?.run { ResponseEntity.ok(authorAssembler.toModel(this)) }
+        ?: ResponseEntity.notFound().build()
 
     override fun postAuthor(newAuthor: Author): ResponseEntity<EntityModel<Author>> {
         return try {
-            newAuthor.setId(authorRepository.count())
+            // Generate ID that does not already exist
+            var autoId = authorRepository.count()
+            while (authorRepository.existsById(autoId))
+                ++autoId
+
+            newAuthor.setId(autoId)
             val entityModel = authorAssembler.toModel(authorRepository.save(newAuthor))
             ResponseEntity
                 .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
@@ -54,22 +56,18 @@ class AuthorAccessService : AuthorAccessInterface {
 
     override fun putAuthor(id: Long, newAuthor: Author): ResponseEntity<EntityModel<Author>> {
         // Check if request body has all valid fields
-        if (newAuthor.getFirstName().isEmpty() || newAuthor.getLastName().isEmpty()) {
+        newAuthor.setId(id)
+        if (!validateFields(newAuthor)) {
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build()
         }
-        try {
-            val existentAuthor = authorRepository.findById(id)
-            return if (existentAuthor.isPresent) {
-                // Replace existing Author
-                existentAuthor.get().apply {
-                    setFirstName(newAuthor.getFirstName())
-                    setLasttName(newAuthor.getLastName())
-                    authorRepository.save(this)
-                }
+        return try {
+            authorRepository.findByIdOrNull(id)?.run {
+                setFirstName(newAuthor.getFirstName())
+                setLasttName(newAuthor.getLastName())
+                authorRepository.save(this)
                 ResponseEntity.noContent().build()
-            } else {
+            } ?: run {
                 // Create a new Author
-                newAuthor.setId(id)
                 val entityModel = authorAssembler.toModel(authorRepository.save(newAuthor))
                 ResponseEntity
                     .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
@@ -88,4 +86,8 @@ class AuthorAccessService : AuthorAccessInterface {
             ResponseEntity.notFound().build()
         }
     }
+
+    private fun validateFields(author: Author) = author.run {
+        getId() < 0 || getFirstName().isEmpty() || getLastName().isEmpty()
+    }.not()
 }

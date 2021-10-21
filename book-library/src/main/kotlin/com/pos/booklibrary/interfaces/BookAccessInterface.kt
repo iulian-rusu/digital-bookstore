@@ -1,6 +1,5 @@
 package com.pos.booklibrary.interfaces
 
-import com.pos.booklibrary.models.Author
 import com.pos.booklibrary.models.Book
 import com.pos.booklibrary.models.BookAuthor
 import org.springframework.hateoas.CollectionModel
@@ -15,7 +14,7 @@ interface BookAccessInterface {
     fun deleteBook(isbn: String): ResponseEntity<Unit>
     fun getBookAuthors(isbn: String): CollectionModel<EntityModel<BookAuthor>>
     fun getBookAuthor(isbn: String, index: Long): ResponseEntity<EntityModel<BookAuthor>>
-    fun putBookAuthor(isbn: String, index: Long, authorIndex: Long): ResponseEntity<EntityModel<BookAuthor>>
+    fun postBookAuthor(isbn: String, bookAuthor: BookAuthor): ResponseEntity<EntityModel<BookAuthor>>
     fun patchBookAuthors(isbn: String, bookAuthors: List<BookAuthor>): ResponseEntity<CollectionModel<EntityModel<BookAuthor>>>
-    fun deleteBookAuthors(isbn: String, authorId: Long): ResponseEntity<Unit>
+    fun deleteBookAuthor(isbn: String, index: Long): ResponseEntity<Unit>
 }

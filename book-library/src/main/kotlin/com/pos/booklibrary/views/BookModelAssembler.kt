@@ -13,6 +13,7 @@ class BookModelAssembler : RepresentationModelAssembler<Book, EntityModel<Book>>
     override fun toModel(book: Book) = EntityModel.of(
         book,
         linkTo(methodOn(BookController::class.java).getBook(book.getIsbn())).withSelfRel(),
-        linkTo(methodOn(BookController::class.java).getAllBooks()).withRel("books")
+        linkTo(methodOn(BookController::class.java).getAllBooks()).withRel("books"),
+        linkTo(methodOn(BookController::class.java).getBookAuthors(book.getIsbn())).withRel("bookAuthors")
     )
 }

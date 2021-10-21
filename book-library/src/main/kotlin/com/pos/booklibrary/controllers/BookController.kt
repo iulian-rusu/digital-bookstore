@@ -2,7 +2,6 @@ package com.pos.booklibrary.controllers
 
 import com.pos.booklibrary.models.Book
 import com.pos.booklibrary.models.BookAuthor
-import com.pos.booklibrary.models.BookAuthorId
 import com.pos.booklibrary.services.BookAccessService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
@@ -35,15 +34,15 @@ class BookController {
     fun getBookAuthor(@PathVariable isbn: String, @PathVariable index: Long) =
         bookAccessService.getBookAuthor(isbn, index)
 
-    @PutMapping("/books/{isbn}/authors/{index}")
-    fun putBookAuthor(@PathVariable isbn: String, @PathVariable index: Long, @RequestBody authorId: BookAuthorId) =
-        bookAccessService.putBookAuthor(isbn, index, authorId.authorId)
+    @PostMapping("/books/{isbn}/authors")
+    fun postBookAuthor(@PathVariable isbn: String, @RequestBody bookAuthor: BookAuthor) =
+        bookAccessService.postBookAuthor(isbn, bookAuthor)
 
     @PatchMapping("/books/{isbn}/authors")
     fun patchBookAuthors(@PathVariable isbn: String, @RequestBody bookAuthors: List<BookAuthor>) =
         bookAccessService.patchBookAuthors(isbn, bookAuthors)
 
     @DeleteMapping("/books/{isbn}/authors/{index}")
-    fun deleteBookAuthors(@PathVariable isbn: String, @PathVariable index: Long) =
-        bookAccessService.deleteBookAuthors(isbn, index)
+    fun deleteBookAuthor(@PathVariable isbn: String, @PathVariable index: Long) =
+        bookAccessService.deleteBookAuthor(isbn, index)
 }

@@ -19,9 +19,11 @@ CREATE TABLE IF NOT EXISTS authors
 
 CREATE TABLE IF NOT EXISTS book_authors
 (
-    isbn         CHAR(13) REFERENCES books (isbn),
-    author_id    INTEGER REFERENCES authors (author_id),
+    isbn         CHAR(13),
+    author_id    INTEGER,
     author_index INTEGER NOT NULL,
+    CONSTRAINT fk_isbn FOREIGN KEY (isbn) REFERENCES books (isbn) ON DELETE CASCADE,
+    CONSTRAINT fk_author_id FOREIGN KEY (author_id) REFERENCES authors (author_id) ON DELETE CASCADE,
     CONSTRAINT pk_book_authors PRIMARY KEY (author_id, isbn),
     CONSTRAINT uk_author_index UNIQUE (author_index, isbn)
 );
