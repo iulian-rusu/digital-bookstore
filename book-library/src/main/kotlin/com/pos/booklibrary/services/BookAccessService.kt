@@ -9,8 +9,8 @@ import com.pos.booklibrary.models.BookAuthor
 import com.pos.booklibrary.models.BookAuthorId
 import com.pos.booklibrary.views.BookAuthorModelAssembler
 import com.pos.booklibrary.views.BookModelAssembler
-import javassist.NotFoundException
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.hateoas.CollectionModel
 import org.springframework.hateoas.EntityModel
 import org.springframework.hateoas.IanaLinkRelations
@@ -37,24 +37,20 @@ class BookAccessService : BookAccessInterface {
 
     override fun getAllBooks(): CollectionModel<EntityModel<Book>> = bookRepository.findAll()
         .map(bookAssembler::toModel)
-        .run {
+        .let { modelList ->
             CollectionModel.of(
-                this,
+                modelList,
                 linkTo(methodOn(BookController::class.java).getAllBooks()).withSelfRel()
             )
         }
 
-    override fun getBook(isbn: String): ResponseEntity<EntityModel<Book>> = bookRepository.findById(isbn)
-        .run {
-            if (isPresent)
-                ResponseEntity.ok(bookAssembler.toModel(get()))
-            else
-                ResponseEntity.notFound().build()
-        }
+    override fun getBook(isbn: String): ResponseEntity<EntityModel<Book>> = bookRepository.findByIdOrNull(isbn)
+        ?.let { ResponseEntity.ok(bookAssembler.toModel(it)) }
+        ?: ResponseEntity.notFound().build()
 
     override fun postBook(newBook: Book): ResponseEntity<EntityModel<Book>> {
         return try {
-            if (!validateFields(newBook)) {
+            if (hasMissingFields(newBook)) {
                 throw MissingRequestValueException("Missing required fields")
             }
             val entityModel = bookAssembler.toModel(bookRepository.save(newBook))
@@ -67,23 +63,22 @@ class BookAccessService : BookAccessInterface {
     }
 
     override fun putBook(isbn: String, newBook: Book): ResponseEntity<EntityModel<Book>> {
-        // Check if request body has all valid fields
-        if (!validateFields(newBook)) {
+        newBook.setIsbn(isbn)
+        if (hasMissingFields(newBook)) {
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build()
         }
-        try {
-            val existentBook = bookRepository.findById(isbn)
-            return if (existentBook.isPresent) {
-                // Replace existing Book
-                existentBook.get().apply {
+        return try {
+            bookRepository.findByIdOrNull(isbn)?.let { existingBook ->
+                // Update existing Book
+                existingBook.apply {
                     setTitle(newBook.getTitle())
                     setGenre(newBook.getGenre())
                     setPublisher(newBook.getPublisher())
                     setPublishYear(newBook.getPublishYear())
-                    bookRepository.save(this)
                 }
+                bookRepository.save(existingBook)
                 ResponseEntity.noContent().build()
-            } else {
+            } ?: run {
                 // Create a new Book
                 newBook.setIsbn(isbn)
                 val entityModel = bookAssembler.toModel(bookRepository.save(newBook))
@@ -108,16 +103,18 @@ class BookAccessService : BookAccessInterface {
     override fun getBookAuthors(isbn: String): CollectionModel<EntityModel<BookAuthor>> =
         bookAuthorRepository.findBookAuthors(isbn)
             .map(bookAuthorAssembler::toModel)
-            .run {
+            .let { modelList ->
                 CollectionModel.of(
-                    this,
+                    modelList,
                     linkTo(methodOn(BookController::class.java).getBookAuthors(isbn)).withSelfRel()
                 )
             }
 
     override fun getBookAuthor(isbn: String, index: Long): ResponseEntity<EntityModel<BookAuthor>> {
         return try {
-            ResponseEntity.ok(bookAuthorAssembler.toModel(bookAuthorRepository.findBookAuthorByIndex(isbn, index)))
+            bookAuthorRepository.findBookAuthorByIndex(isbn, index)?.let { bookAuthor ->
+                ResponseEntity.ok(bookAuthorAssembler.toModel(bookAuthor))
+            } ?: ResponseEntity.notFound().build()
         } catch (e: Exception) {
             ResponseEntity.notFound().build()
         }
@@ -125,10 +122,15 @@ class BookAccessService : BookAccessInterface {
 
     override fun postBookAuthor(isbn: String, bookAuthor: BookAuthor): ResponseEntity<EntityModel<BookAuthor>> {
         return try {
-            val index = bookAuthorRepository.findBookAuthors(isbn).count().toLong()
-            bookAuthor.setAuthorIndex(index)
+            // Generate index that does not already exist
+            val bookAuthors = bookAuthorRepository.findBookAuthors(isbn)
+            var nextIndex = bookAuthors.count().toLong()
+            while (bookAuthors.any { it.getAuthorIndex() == nextIndex }) {
+                ++nextIndex
+            }
+            bookAuthor.setAuthorIndex(nextIndex)
             bookAuthor.setIsbn(isbn)
-            if (!validateFields(bookAuthor)) {
+            if (hasMissingFields(bookAuthor)) {
                 throw MissingRequestValueException("Missing required fields")
             }
             bookAuthorRepository.save(bookAuthor)
@@ -146,12 +148,26 @@ class BookAccessService : BookAccessInterface {
         bookAuthors: List<BookAuthor>
     ): ResponseEntity<CollectionModel<EntityModel<BookAuthor>>> {
         return try {
+            val existingAuthors = bookAuthorRepository.findBookAuthors(isbn)
+            var nextIndex = existingAuthors.count().toLong()
             bookAuthors.forEach { bookAuthor ->
                 bookAuthor.setIsbn(isbn)
-                if (!validateFields(bookAuthor)) {
-                    throw MissingRequestValueException("Missing required fields")
+                // Check if index already has a BookAuthor
+                if (existingAuthors.any { it.getAuthorIndex() == bookAuthor.getAuthorIndex() }) {
+                    // Update existing BookAuthor
+                    if (hasMissingFields(bookAuthor)) {
+                        throw MissingRequestValueException("Missing required fields")
+                    }
+                    bookAuthorRepository.updateBookAuthor(
+                        isbn,
+                        bookAuthor.getAuthorId(),
+                        bookAuthor.getAuthorIndex()
+                    )
+                } else {
+                    // Generate next index and add new BookAuthor
+                    bookAuthor.setAuthorIndex(nextIndex++)
+                    bookAuthorRepository.save(bookAuthor)
                 }
-                bookAuthorRepository.updateBookAuthor(isbn, bookAuthor.getAuthorIndex(), bookAuthor.getAuthorId())
             }
             ResponseEntity.accepted().body(getBookAuthors(isbn))
         } catch (e: Exception) {
@@ -161,20 +177,22 @@ class BookAccessService : BookAccessInterface {
 
     override fun deleteBookAuthor(isbn: String, index: Long): ResponseEntity<Unit> {
         return try {
-            val authorId = bookAuthorRepository.findBookAuthorByIndex(isbn, index).getAuthorId()
-            bookAuthorRepository.deleteById(BookAuthorId(isbn, authorId))
-            ResponseEntity.noContent().build()
+            bookAuthorRepository.findBookAuthorByIndex(isbn, index)?.let {
+                val authorId = it.getAuthorId()
+                bookAuthorRepository.deleteById(BookAuthorId(isbn, authorId))
+                ResponseEntity.noContent().build()
+            } ?: ResponseEntity.notFound().build()
         } catch (e: Exception) {
             ResponseEntity.notFound().build()
         }
     }
 
-    private fun validateFields(book: Book) = book.run {
+    private fun hasMissingFields(book: Book) = book.run {
         getIsbn().isEmpty() || getTitle().isEmpty() || getGenre().isEmpty() ||
                 getPublisher().isEmpty() || getPublishYear() <= 0
-    }.not()
+    }
 
-    private fun validateFields(bookAuthor: BookAuthor) = bookAuthor.run {
+    private fun hasMissingFields(bookAuthor: BookAuthor) = bookAuthor.run {
         getIsbn().isEmpty() || getAuthorId() < 0 || getAuthorIndex() < 0
-    }.not()
+    }
 }

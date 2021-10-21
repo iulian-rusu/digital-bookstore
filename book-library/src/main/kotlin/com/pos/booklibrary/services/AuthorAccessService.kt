@@ -26,25 +26,25 @@ class AuthorAccessService : AuthorAccessInterface {
 
     override fun getAllAuthors(): CollectionModel<EntityModel<Author>> = authorRepository.findAll()
         .map(authorAssembler::toModel)
-        .run {
+        .let { modelList ->
             CollectionModel.of(
-                this,
+                modelList,
                 linkTo(methodOn(AuthorController::class.java).getAllAuthors()).withSelfRel()
             )
         }
 
     override fun getAuthor(id: Long): ResponseEntity<EntityModel<Author>> = authorRepository.findByIdOrNull(id)
-        ?.run { ResponseEntity.ok(authorAssembler.toModel(this)) }
+        ?.let { ResponseEntity.ok(authorAssembler.toModel(it)) }
         ?: ResponseEntity.notFound().build()
 
     override fun postAuthor(newAuthor: Author): ResponseEntity<EntityModel<Author>> {
         return try {
             // Generate ID that does not already exist
-            var autoId = authorRepository.count()
-            while (authorRepository.existsById(autoId))
-                ++autoId
-
-            newAuthor.setId(autoId)
+            var nextId = authorRepository.count()
+            while (authorRepository.existsById(nextId)) {
+                ++nextId
+            }
+            newAuthor.setId(nextId)
             val entityModel = authorAssembler.toModel(authorRepository.save(newAuthor))
             ResponseEntity
                 .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
@@ -55,16 +55,18 @@ class AuthorAccessService : AuthorAccessInterface {
     }
 
     override fun putAuthor(id: Long, newAuthor: Author): ResponseEntity<EntityModel<Author>> {
-        // Check if request body has all valid fields
         newAuthor.setId(id)
-        if (!validateFields(newAuthor)) {
+        if (hasMissingFields(newAuthor)) {
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build()
         }
         return try {
-            authorRepository.findByIdOrNull(id)?.run {
-                setFirstName(newAuthor.getFirstName())
-                setLasttName(newAuthor.getLastName())
-                authorRepository.save(this)
+            authorRepository.findByIdOrNull(id)?.let { existingAuthor ->
+                // Update existing Author
+                existingAuthor.apply {
+                    setFirstName(newAuthor.getFirstName())
+                    setLasttName(newAuthor.getLastName())
+                }
+                authorRepository.save(existingAuthor)
                 ResponseEntity.noContent().build()
             } ?: run {
                 // Create a new Author
@@ -87,7 +89,7 @@ class AuthorAccessService : AuthorAccessInterface {
         }
     }
 
-    private fun validateFields(author: Author) = author.run {
+    private fun hasMissingFields(author: Author) = author.run {
         getId() < 0 || getFirstName().isEmpty() || getLastName().isEmpty()
-    }.not()
+    }
 }

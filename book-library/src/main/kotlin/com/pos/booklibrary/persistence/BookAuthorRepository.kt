@@ -22,7 +22,7 @@ interface BookAuthorRepository : CrudRepository<BookAuthor, BookAuthorId> {
     fun findBookAuthorByIndex(
         @Param("targetIsbn") isbn: String,
         @Param("targetIndex") index: Long
-    ): BookAuthor
+    ): BookAuthor?
 
     @Transactional
     @Modifying
@@ -32,7 +32,7 @@ interface BookAuthorRepository : CrudRepository<BookAuthor, BookAuthorId> {
     )
     fun updateBookAuthor(
         @Param("targetIsbn") isbn: String,
-        @Param("targetIndex") index: Long,
-        @Param("newId") id: Long
+        @Param("newId") authorId: Long,
+        @Param("targetIndex") authorIndex: Long
     )
 }
