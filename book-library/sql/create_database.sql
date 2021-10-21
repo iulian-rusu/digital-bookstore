@@ -10,10 +10,11 @@ CREATE TABLE IF NOT EXISTS books
 
 CREATE TABLE IF NOT EXISTS authors
 (
-    author_id  INTEGER     NOT NULL AUTO_INCREMENT,
+    author_id  INTEGER     NOT NULL,
     first_name VARCHAR(64) NOT NULL,
     last_name  VARCHAR(64) NOT NULL,
-    PRIMARY KEY (author_id)
+    PRIMARY KEY (author_id),
+    CONSTRAINT uk_author_name UNIQUE (first_name, last_name)
 );
 
 CREATE TABLE IF NOT EXISTS book_authors
