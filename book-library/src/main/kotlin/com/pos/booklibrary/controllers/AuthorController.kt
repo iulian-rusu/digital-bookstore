@@ -1,5 +1,6 @@
 package com.pos.booklibrary.controllers
 
+import com.pos.booklibrary.controllers.query.AuthorQueryCriteria
 import com.pos.booklibrary.models.Author
 import com.pos.booklibrary.services.AuthorAccessService
 import org.springframework.beans.factory.annotation.Autowired
@@ -12,7 +13,8 @@ class AuthorController {
     private lateinit var authorAccessService: AuthorAccessService
 
     @GetMapping("/authors")
-    fun getAllAuthors() = authorAccessService.getAllAuthors()
+    fun getAllAuthors(@RequestParam params: Map<String, String>) =
+        authorAccessService.getAllAuthors(AuthorQueryCriteria(params))
 
     @GetMapping("/authors/{id}")
     fun getAuthor(@PathVariable id: Long) = authorAccessService.getAuthor(id)

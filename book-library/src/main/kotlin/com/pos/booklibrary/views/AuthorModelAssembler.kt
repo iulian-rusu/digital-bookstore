@@ -13,6 +13,6 @@ class AuthorModelAssembler : RepresentationModelAssembler<Author, EntityModel<Au
     override fun toModel(author: Author) = EntityModel.of(
         author,
         linkTo(methodOn(AuthorController::class.java).getAuthor(author.getId())).withSelfRel(),
-        linkTo(methodOn(AuthorController::class.java).getAllAuthors()).withRel("authors")
+        linkTo(methodOn(AuthorController::class.java).getAllAuthors(mapOf())).withRel("authors")
     )
 }

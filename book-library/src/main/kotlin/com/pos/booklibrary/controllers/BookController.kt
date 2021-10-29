@@ -1,7 +1,7 @@
 package com.pos.booklibrary.controllers
 
+import com.pos.booklibrary.controllers.query.BookQueryCriteria
 import com.pos.booklibrary.models.Book
-import com.pos.booklibrary.models.BookAuthor
 import com.pos.booklibrary.services.BookAccessService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
@@ -13,7 +13,8 @@ class BookController {
     private lateinit var bookAccessService: BookAccessService
 
     @GetMapping("/books")
-    fun getAllBooks() = bookAccessService.getAllBooks()
+    fun getAllBooks(@RequestParam params: Map<String, String>) =
+        bookAccessService.getAllBooks(BookQueryCriteria(params))
 
     @GetMapping("/books/{isbn}")
     fun getBook(@PathVariable isbn: String) = bookAccessService.getBook(isbn)

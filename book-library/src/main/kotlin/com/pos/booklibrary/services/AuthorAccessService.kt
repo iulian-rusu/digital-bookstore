@@ -1,6 +1,7 @@
 package com.pos.booklibrary.services
 
 import com.pos.booklibrary.controllers.AuthorController
+import com.pos.booklibrary.controllers.query.AuthorQueryCriteria
 import com.pos.booklibrary.interfaces.AuthorAccessInterface
 import com.pos.booklibrary.persistence.AuthorRepository
 import com.pos.booklibrary.models.Author
@@ -24,14 +25,16 @@ class AuthorAccessService : AuthorAccessInterface {
     @Autowired
     private lateinit var authorAssembler: AuthorModelAssembler
 
-    override fun getAllAuthors(): CollectionModel<EntityModel<Author>> = authorRepository.findAll()
-        .map(authorAssembler::toModel)
-        .let { modelList ->
-            CollectionModel.of(
-                modelList,
-                linkTo(methodOn(AuthorController::class.java).getAllAuthors()).withSelfRel()
-            )
-        }
+    override fun getAllAuthors(criteria: AuthorQueryCriteria): CollectionModel<EntityModel<Author>> =
+        authorRepository.findAll()
+            .filter { criteria.check(it) }
+            .map(authorAssembler::toModel)
+            .let { modelList ->
+                CollectionModel.of(
+                    modelList,
+                    linkTo(methodOn(AuthorController::class.java).getAllAuthors(mapOf())).withSelfRel()
+                )
+            }
 
     override fun getAuthor(id: Long): ResponseEntity<EntityModel<Author>> = authorRepository.findByIdOrNull(id)
         ?.let { ResponseEntity.ok(authorAssembler.toModel(it)) }

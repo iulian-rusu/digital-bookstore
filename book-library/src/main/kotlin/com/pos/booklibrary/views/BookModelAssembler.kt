@@ -14,6 +14,6 @@ class BookModelAssembler : RepresentationModelAssembler<Book, EntityModel<Book>>
         book,
         linkTo(methodOn(BookController::class.java).getBook(book.getIsbn())).withSelfRel(),
         linkTo(methodOn(BookController::class.java).getBookAuthors(book.getIsbn())).withRel("authors"),
-        linkTo(methodOn(BookController::class.java).getAllBooks()).withRel("books")
+        linkTo(methodOn(BookController::class.java).getAllBooks(mapOf())).withRel("books")
     )
 }

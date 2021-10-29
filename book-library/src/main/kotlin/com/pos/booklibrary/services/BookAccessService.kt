@@ -1,6 +1,7 @@
 package com.pos.booklibrary.services
 
 import com.pos.booklibrary.controllers.BookController
+import com.pos.booklibrary.controllers.query.BookQueryCriteria
 import com.pos.booklibrary.interfaces.BookAccessInterface
 import com.pos.booklibrary.persistence.BookAuthorRepository
 import com.pos.booklibrary.persistence.BookRepository
@@ -34,14 +35,22 @@ class BookAccessService : BookAccessInterface {
     @Autowired
     private lateinit var bookAuthorAssembler: BookAuthorModelAssembler
 
-    override fun getAllBooks(): CollectionModel<EntityModel<Book>> = bookRepository.findAll()
-        .map(bookAssembler::toModel)
-        .let { modelList ->
-            CollectionModel.of(
-                modelList,
-                linkTo(methodOn(BookController::class.java).getAllBooks()).withSelfRel()
-            )
-        }
+    override fun getAllBooks(criteria: BookQueryCriteria): CollectionModel<EntityModel<Book>> =
+        bookRepository.findAll()
+            .filter { criteria.check(it) }
+            .let {
+                if (criteria.page >= 0)
+                    it.chunked(criteria.itemsPerPage).getOrElse(criteria.page) { emptyList() }
+                else
+                    it
+            }
+            .map(bookAssembler::toModel)
+            .let { modelList ->
+                CollectionModel.of(
+                    modelList,
+                    linkTo(methodOn(BookController::class.java).getAllBooks(emptyMap())).withSelfRel()
+                )
+            }
 
     override fun getBook(isbn: String): ResponseEntity<EntityModel<Book>> = bookRepository.findByIdOrNull(isbn)
         ?.let { ResponseEntity.ok(bookAssembler.toModel(it)) }

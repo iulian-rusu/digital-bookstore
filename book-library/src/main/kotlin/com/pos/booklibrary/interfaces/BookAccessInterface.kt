@@ -1,5 +1,6 @@
 package com.pos.booklibrary.interfaces
 
+import com.pos.booklibrary.controllers.query.BookQueryCriteria
 import com.pos.booklibrary.models.Book
 import com.pos.booklibrary.models.BookAuthor
 import org.springframework.hateoas.CollectionModel
@@ -7,7 +8,7 @@ import org.springframework.hateoas.EntityModel
 import org.springframework.http.ResponseEntity
 
 interface BookAccessInterface {
-    fun getAllBooks(): CollectionModel<EntityModel<Book>>
+    fun getAllBooks(criteria: BookQueryCriteria): CollectionModel<EntityModel<Book>>
     fun getBook(isbn: String): ResponseEntity<EntityModel<Book>>
     fun postBook(newBook: Book): ResponseEntity<EntityModel<Book>>
     fun putBook(isbn: String, newBook: Book): ResponseEntity<EntityModel<Book>>

@@ -15,6 +15,15 @@ interface BookAuthorRepository : CrudRepository<BookAuthor, BookAuthorIndex> {
     )
     fun findBookAuthors(@Param("targetIsbn") isbn: String): MutableIterable<BookAuthor>
 
+    @Query(
+        value = "SELECT * FROM book_authors WHERE isbn = :targetIsbn AND author_index = :targetIndex LIMIT 1",
+        nativeQuery = true
+    )
+    fun findBookAuthorByIndex(
+        @Param("targetIsbn") isbn: String,
+        @Param("targetIndex") index: Long
+    ): BookAuthor?
+
     @Transactional
     @Modifying
     @Query(
@@ -33,13 +42,4 @@ interface BookAuthorRepository : CrudRepository<BookAuthor, BookAuthorIndex> {
         @Param("targetIsbn") isbn: String,
         @Param("targetIndex") index: Long
     )
-
-    @Query(
-        value = "SELECT * FROM book_authors WHERE isbn = :targetIsbn AND author_index = :targetIndex LIMIT 1",
-        nativeQuery = true
-    )
-    fun findBookAuthorByIndex(
-        @Param("targetIsbn") isbn: String,
-        @Param("targetIndex") index: Long
-    ): BookAuthor?
 }
