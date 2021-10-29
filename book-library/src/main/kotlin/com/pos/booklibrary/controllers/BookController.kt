@@ -35,14 +35,14 @@ class BookController {
         bookAccessService.getBookAuthor(isbn, index)
 
     @PostMapping("/books/{isbn}/authors")
-    fun postBookAuthor(@PathVariable isbn: String, @RequestBody bookAuthor: BookAuthor) =
-        bookAccessService.postBookAuthor(isbn, bookAuthor)
-
-    @PatchMapping("/books/{isbn}/authors")
-    fun patchBookAuthors(@PathVariable isbn: String, @RequestBody bookAuthors: List<BookAuthor>) =
-        bookAccessService.patchBookAuthors(isbn, bookAuthors)
+    fun postBookAuthors(@PathVariable isbn: String, @RequestBody bookAuthorIds: List<Long>) =
+        bookAccessService.postBookAuthors(isbn, bookAuthorIds)
 
     @DeleteMapping("/books/{isbn}/authors/{index}")
     fun deleteBookAuthor(@PathVariable isbn: String, @PathVariable index: Long) =
         bookAccessService.deleteBookAuthor(isbn, index)
+
+    @DeleteMapping("/books/{isbn}/authors")
+    fun deleteBookAuthors(@PathVariable isbn: String) =
+        bookAccessService.deleteBookAuthors(isbn)
 }

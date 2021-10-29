@@ -14,7 +14,7 @@ interface BookAccessInterface {
     fun deleteBook(isbn: String): ResponseEntity<Unit>
     fun getBookAuthors(isbn: String): CollectionModel<EntityModel<BookAuthor>>
     fun getBookAuthor(isbn: String, index: Long): ResponseEntity<EntityModel<BookAuthor>>
-    fun postBookAuthor(isbn: String, bookAuthor: BookAuthor): ResponseEntity<EntityModel<BookAuthor>>
-    fun patchBookAuthors(isbn: String, bookAuthors: List<BookAuthor>): ResponseEntity<CollectionModel<EntityModel<BookAuthor>>>
+    fun postBookAuthors(isbn: String, bookAuthorIds: List<Long>): ResponseEntity<CollectionModel<EntityModel<BookAuthor>>>
     fun deleteBookAuthor(isbn: String, index: Long): ResponseEntity<Unit>
+    fun deleteBookAuthors(isbn: String): ResponseEntity<Unit>
 }

@@ -39,17 +39,12 @@ class AuthorAccessService : AuthorAccessInterface {
 
     override fun postAuthor(newAuthor: Author): ResponseEntity<EntityModel<Author>> {
         return try {
-            // Generate ID that does not already exist
-            var nextId = authorRepository.count()
-            while (authorRepository.existsById(nextId)) {
-                ++nextId
-            }
-            newAuthor.setId(nextId)
             val entityModel = authorAssembler.toModel(authorRepository.save(newAuthor))
             ResponseEntity
                 .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
                 .body(entityModel)
         } catch (e: Exception) {
+            println(e)
             ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build()
         }
     }
@@ -60,22 +55,24 @@ class AuthorAccessService : AuthorAccessInterface {
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build()
         }
         return try {
-            authorRepository.findByIdOrNull(id)?.let { existingAuthor ->
+            authorRepository.findByIdOrNull(id)?.let {
                 // Update existing Author
-                existingAuthor.apply {
-                    setFirstName(newAuthor.getFirstName())
-                    setLasttName(newAuthor.getLastName())
+                newAuthor.run {
+                    authorRepository.saveWithId(id, getFirstName(), getLastName())
                 }
-                authorRepository.save(existingAuthor)
                 ResponseEntity.noContent().build()
             } ?: run {
                 // Create a new Author
-                val entityModel = authorAssembler.toModel(authorRepository.save(newAuthor))
+                val entityModel = authorAssembler.toModel(newAuthor.run {
+                    authorRepository.saveWithId(id, getFirstName(), getLastName())
+                    this
+                })
                 ResponseEntity
                     .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
                     .body(entityModel)
             }
         } catch (e: Exception) {
+            println(e)
             return ResponseEntity.status(HttpStatus.CONFLICT).build()
         }
     }
@@ -85,6 +82,7 @@ class AuthorAccessService : AuthorAccessInterface {
             authorRepository.deleteById(id)
             ResponseEntity.noContent().build()
         } catch (e: Exception) {
+            println(e)
             ResponseEntity.notFound().build()
         }
     }

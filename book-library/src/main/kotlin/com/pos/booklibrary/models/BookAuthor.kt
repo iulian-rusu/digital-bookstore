@@ -5,7 +5,7 @@ import javax.persistence.*
 
 @Entity
 @Table(name = "book_authors")
-@IdClass(BookAuthorId::class)
+@IdClass(BookAuthorIndex::class)
 @JsonIgnoreProperties("id")
 class BookAuthor(
     @Id
@@ -13,11 +13,11 @@ class BookAuthor(
     private var isbn: String = "",
 
     @Id
+    @Column(name = "author_index")
+    private var authorIndex: Long = -1,
+
     @Column(name = "author_id")
     private var authorId: Long = -1,
-
-    @Column(name = "author_index")
-    private var authorIndex: Long = -1
 ) {
     fun getIsbn() = isbn
 
@@ -25,15 +25,15 @@ class BookAuthor(
         isbn = value
     }
 
-    fun getAuthorId() = authorId
-
-    fun setAuthorId(value: Long) {
-        authorId = value
-    }
-
     fun getAuthorIndex() = authorIndex
 
     fun setAuthorIndex(value: Long) {
         authorIndex = value
+    }
+
+    fun getAuthorId() = authorId
+
+    fun setAuthorId(value: Long) {
+        authorId = value
     }
 }

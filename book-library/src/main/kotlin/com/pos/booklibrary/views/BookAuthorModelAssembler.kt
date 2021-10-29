@@ -1,5 +1,6 @@
 package com.pos.booklibrary.views
 
+import com.pos.booklibrary.controllers.AuthorController
 import com.pos.booklibrary.controllers.BookController
 import com.pos.booklibrary.models.BookAuthor
 import org.springframework.hateoas.EntityModel
@@ -13,7 +14,7 @@ class BookAuthorModelAssembler : RepresentationModelAssembler<BookAuthor, Entity
     override fun toModel(author: BookAuthor) = EntityModel.of(
         author,
         linkTo(methodOn(BookController::class.java).getBookAuthor(author.getIsbn(), author.getAuthorIndex())).withSelfRel(),
-        linkTo(methodOn(BookController::class.java).getBookAuthors(author.getIsbn())).withRel("bookAuthors"),
-        linkTo(methodOn(BookController::class.java).getBook(author.getIsbn())).withRel("book")
+        linkTo(methodOn(BookController::class.java).getBook(author.getIsbn())).withRel("book"),
+        linkTo(methodOn(AuthorController::class.java).getAuthor(author.getAuthorId())).withRel("author"),
     )
 }

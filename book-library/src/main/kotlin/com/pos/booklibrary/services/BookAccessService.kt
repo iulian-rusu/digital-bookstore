@@ -6,7 +6,6 @@ import com.pos.booklibrary.persistence.BookAuthorRepository
 import com.pos.booklibrary.persistence.BookRepository
 import com.pos.booklibrary.models.Book
 import com.pos.booklibrary.models.BookAuthor
-import com.pos.booklibrary.models.BookAuthorId
 import com.pos.booklibrary.views.BookAuthorModelAssembler
 import com.pos.booklibrary.views.BookModelAssembler
 import org.springframework.beans.factory.annotation.Autowired
@@ -58,6 +57,7 @@ class BookAccessService : BookAccessInterface {
                 .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
                 .body(entityModel)
         } catch (e: Exception) {
+            println(e)
             ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build()
         }
     }
@@ -68,25 +68,19 @@ class BookAccessService : BookAccessInterface {
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build()
         }
         return try {
-            bookRepository.findByIdOrNull(isbn)?.let { existingBook ->
+            bookRepository.findByIdOrNull(isbn)?.let {
                 // Update existing Book
-                existingBook.apply {
-                    setTitle(newBook.getTitle())
-                    setGenre(newBook.getGenre())
-                    setPublisher(newBook.getPublisher())
-                    setPublishYear(newBook.getPublishYear())
-                }
-                bookRepository.save(existingBook)
+                bookRepository.save(newBook)
                 ResponseEntity.noContent().build()
             } ?: run {
                 // Create a new Book
-                newBook.setIsbn(isbn)
                 val entityModel = bookAssembler.toModel(bookRepository.save(newBook))
                 ResponseEntity
                     .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
                     .body(entityModel)
             }
         } catch (e: Exception) {
+            println(e)
             return ResponseEntity.status(HttpStatus.CONFLICT).build()
         }
     }
@@ -96,6 +90,7 @@ class BookAccessService : BookAccessInterface {
             bookRepository.deleteById(isbn)
             ResponseEntity.noContent().build()
         } catch (e: Exception) {
+            println(e)
             ResponseEntity.notFound().build()
         }
     }
@@ -116,73 +111,44 @@ class BookAccessService : BookAccessInterface {
                 ResponseEntity.ok(bookAuthorAssembler.toModel(bookAuthor))
             } ?: ResponseEntity.notFound().build()
         } catch (e: Exception) {
+            println(e)
             ResponseEntity.notFound().build()
         }
     }
 
-    override fun postBookAuthor(isbn: String, bookAuthor: BookAuthor): ResponseEntity<EntityModel<BookAuthor>> {
-        return try {
-            // Generate index that does not already exist
-            val bookAuthors = bookAuthorRepository.findBookAuthors(isbn)
-            var nextIndex = bookAuthors.count().toLong()
-            while (bookAuthors.any { it.getAuthorIndex() == nextIndex }) {
-                ++nextIndex
-            }
-            bookAuthor.setAuthorIndex(nextIndex)
-            bookAuthor.setIsbn(isbn)
-            if (hasMissingFields(bookAuthor)) {
-                throw MissingRequestValueException("Missing required fields")
-            }
-            bookAuthorRepository.save(bookAuthor)
-            val entityModel = bookAuthorAssembler.toModel(bookAuthor)
-            ResponseEntity
-                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
-                .body(entityModel)
-        } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build()
-        }
-    }
-
-    override fun patchBookAuthors(
+    override fun postBookAuthors(
         isbn: String,
-        bookAuthors: List<BookAuthor>
+        bookAuthorIds: List<Long>
     ): ResponseEntity<CollectionModel<EntityModel<BookAuthor>>> {
         return try {
-            val existingAuthors = bookAuthorRepository.findBookAuthors(isbn)
-            var nextIndex = existingAuthors.count().toLong()
-            bookAuthors.forEach { bookAuthor ->
-                bookAuthor.setIsbn(isbn)
-                // Check if index already has a BookAuthor
-                if (existingAuthors.any { it.getAuthorIndex() == bookAuthor.getAuthorIndex() }) {
-                    // Update existing BookAuthor
-                    if (hasMissingFields(bookAuthor)) {
-                        throw MissingRequestValueException("Missing required fields")
-                    }
-                    bookAuthorRepository.updateBookAuthor(
-                        isbn,
-                        bookAuthor.getAuthorId(),
-                        bookAuthor.getAuthorIndex()
-                    )
-                } else {
-                    // Generate next index and add new BookAuthor
-                    bookAuthor.setAuthorIndex(nextIndex++)
-                    bookAuthorRepository.save(bookAuthor)
-                }
+            bookAuthorIds.mapIndexed { index, bookAuthorId ->
+                BookAuthor(isbn, index.toLong(), bookAuthorId)
+            }.also { newAuthors ->
+                bookAuthorRepository.saveAll(newAuthors)
             }
             ResponseEntity.accepted().body(getBookAuthors(isbn))
         } catch (e: Exception) {
+            println(e)
             ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build()
         }
     }
 
     override fun deleteBookAuthor(isbn: String, index: Long): ResponseEntity<Unit> {
         return try {
-            bookAuthorRepository.findBookAuthorByIndex(isbn, index)?.let {
-                val authorId = it.getAuthorId()
-                bookAuthorRepository.deleteById(BookAuthorId(isbn, authorId))
-                ResponseEntity.noContent().build()
-            } ?: ResponseEntity.notFound().build()
+            bookAuthorRepository.deleteBookAuthorByIndex(isbn, index)
+            ResponseEntity.noContent().build()
         } catch (e: Exception) {
+            println(e)
+            ResponseEntity.notFound().build()
+        }
+    }
+
+    override fun deleteBookAuthors(isbn: String): ResponseEntity<Unit> {
+        return try {
+            bookAuthorRepository.deleteBookAuthors(isbn)
+            ResponseEntity.noContent().build()
+        } catch (e: Exception) {
+            println(e)
             ResponseEntity.notFound().build()
         }
     }
@@ -190,9 +156,5 @@ class BookAccessService : BookAccessInterface {
     private fun hasMissingFields(book: Book) = book.run {
         getIsbn().isEmpty() || getTitle().isEmpty() || getGenre().isEmpty() ||
                 getPublisher().isEmpty() || getPublishYear() <= 0
-    }
-
-    private fun hasMissingFields(bookAuthor: BookAuthor) = bookAuthor.run {
-        getIsbn().isEmpty() || getAuthorId() < 0 || getAuthorIndex() < 0
     }
 }

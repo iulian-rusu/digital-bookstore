@@ -6,6 +6,7 @@ import javax.persistence.*
 @Table(name = "authors")
 class Author(
     @Id
+    @GeneratedValue
     @Column(name = "author_id")
     private var id: Long = -1,
 
