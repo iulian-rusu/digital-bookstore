@@ -1,6 +1,6 @@
 package com.pos.booklibrary.controllers
 
-import com.pos.booklibrary.controllers.query.BookQueryCriteria
+import com.pos.booklibrary.persistence.query.BookQueryCriteria
 import com.pos.booklibrary.models.Book
 import com.pos.booklibrary.services.BookAccessService
 import org.springframework.beans.factory.annotation.Autowired

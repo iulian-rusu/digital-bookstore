@@ -1,6 +1,6 @@
 package com.pos.booklibrary.interfaces
 
-import com.pos.booklibrary.controllers.query.BookQueryCriteria
+import com.pos.booklibrary.persistence.query.BookQueryCriteria
 import com.pos.booklibrary.models.Book
 import com.pos.booklibrary.models.BookAuthor
 import org.springframework.hateoas.CollectionModel

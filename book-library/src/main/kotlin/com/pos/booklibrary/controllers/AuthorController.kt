@@ -1,6 +1,6 @@
 package com.pos.booklibrary.controllers
 
-import com.pos.booklibrary.controllers.query.AuthorQueryCriteria
+import com.pos.booklibrary.persistence.query.AuthorQueryCriteria
 import com.pos.booklibrary.models.Author
 import com.pos.booklibrary.services.AuthorAccessService
 import org.springframework.beans.factory.annotation.Autowired

@@ -1,12 +1,14 @@
 package com.pos.booklibrary.services
 
 import com.pos.booklibrary.controllers.BookController
-import com.pos.booklibrary.controllers.query.BookQueryCriteria
+import com.pos.booklibrary.persistence.query.BookQueryCriteria
 import com.pos.booklibrary.interfaces.BookAccessInterface
 import com.pos.booklibrary.persistence.BookAuthorRepository
 import com.pos.booklibrary.persistence.BookRepository
 import com.pos.booklibrary.models.Book
 import com.pos.booklibrary.models.BookAuthor
+import com.pos.booklibrary.persistence.CustomQueryRepository
+import com.pos.booklibrary.persistence.mappers.BookRowMapper
 import com.pos.booklibrary.views.BookAuthorModelAssembler
 import com.pos.booklibrary.views.BookModelAssembler
 import org.springframework.beans.factory.annotation.Autowired
@@ -30,20 +32,16 @@ class BookAccessService : BookAccessInterface {
     private lateinit var bookAuthorRepository: BookAuthorRepository
 
     @Autowired
+    private lateinit var customQueryRepository: CustomQueryRepository
+
+    @Autowired
     private lateinit var bookAssembler: BookModelAssembler
 
     @Autowired
     private lateinit var bookAuthorAssembler: BookAuthorModelAssembler
 
     override fun getAllBooks(criteria: BookQueryCriteria): CollectionModel<EntityModel<Book>> =
-        bookRepository.findAll()
-            .filter { criteria.check(it) }
-            .let {
-                if (criteria.page >= 0)
-                    it.chunked(criteria.itemsPerPage).getOrElse(criteria.page) { emptyList() }
-                else
-                    it
-            }
+        customQueryRepository.findByCriteria(criteria, BookRowMapper())
             .map(bookAssembler::toModel)
             .let { modelList ->
                 CollectionModel.of(
