@@ -13,8 +13,13 @@ import org.springframework.stereotype.Component
 class BookAuthorModelAssembler : RepresentationModelAssembler<BookAuthor, EntityModel<BookAuthor>> {
     override fun toModel(author: BookAuthor) = EntityModel.of(
         author,
-        linkTo(methodOn(BookController::class.java).getBookAuthor(author.getIsbn(), author.getAuthorIndex())).withSelfRel(),
-        linkTo(methodOn(BookController::class.java).getBook(author.getIsbn())).withRel("book"),
-        linkTo(methodOn(AuthorController::class.java).getAuthor(author.getAuthorId())).withRel("author"),
+        linkTo(
+            methodOn(BookController::class.java).getBookAuthor(
+                author.getIsbn(),
+                author.getAuthorIndex()
+            )
+        ).withSelfRel(),
+        linkTo(methodOn(BookController::class.java).getBook(author.getIsbn(), null)).withRel("book"),
+        linkTo(methodOn(AuthorController::class.java).getAuthor(author.getAuthorId())).withRel("author")
     )
 }

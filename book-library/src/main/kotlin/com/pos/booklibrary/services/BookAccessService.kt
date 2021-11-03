@@ -3,6 +3,8 @@ package com.pos.booklibrary.services
 import com.pos.booklibrary.controllers.BookController
 import com.pos.booklibrary.persistence.query.BookQueryCriteria
 import com.pos.booklibrary.interfaces.BookAccessInterface
+import com.pos.booklibrary.models.BasicBook
+import com.pos.booklibrary.models.BriefBook
 import com.pos.booklibrary.persistence.BookAuthorRepository
 import com.pos.booklibrary.persistence.BookRepository
 import com.pos.booklibrary.models.Book
@@ -40,7 +42,7 @@ class BookAccessService : BookAccessInterface {
     @Autowired
     private lateinit var bookAuthorAssembler: BookAuthorModelAssembler
 
-    override fun getAllBooks(criteria: BookQueryCriteria): CollectionModel<EntityModel<Book>> =
+    override fun getAllBooks(criteria: BookQueryCriteria): CollectionModel<EntityModel<BasicBook>> =
         customQueryRepository.findByCriteria(criteria, BookRowMapper())
             .map(bookAssembler::toModel)
             .let { modelList ->
@@ -50,11 +52,15 @@ class BookAccessService : BookAccessInterface {
                 )
             }
 
-    override fun getBook(isbn: String): ResponseEntity<EntityModel<Book>> = bookRepository.findByIdOrNull(isbn)
-        ?.let { ResponseEntity.ok(bookAssembler.toModel(it)) }
-        ?: ResponseEntity.notFound().build()
+    override fun getBook(isbn: String, verbose: Boolean): ResponseEntity<EntityModel<BasicBook>> =
+        bookRepository.findByIdOrNull(isbn)
+            ?.let {
+                val model = if (verbose) it else BriefBook(it)
+                ResponseEntity.ok(bookAssembler.toModel(model))
+            }
+            ?: ResponseEntity.notFound().build()
 
-    override fun postBook(newBook: Book): ResponseEntity<EntityModel<Book>> {
+    override fun postBook(newBook: Book): ResponseEntity<EntityModel<BasicBook>> {
         return try {
             if (hasMissingFields(newBook)) {
                 throw MissingRequestValueException("Missing required fields")
@@ -69,7 +75,7 @@ class BookAccessService : BookAccessInterface {
         }
     }
 
-    override fun putBook(isbn: String, newBook: Book): ResponseEntity<EntityModel<Book>> {
+    override fun putBook(isbn: String, newBook: Book): ResponseEntity<EntityModel<BasicBook>> {
         newBook.setIsbn(isbn)
         if (hasMissingFields(newBook)) {
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build()

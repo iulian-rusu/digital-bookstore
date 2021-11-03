@@ -23,16 +23,16 @@ class Book(
 
     @Column(name = "genre")
     private var genre: String = ""
-) {
-    fun getIsbn() = isbn
+) : BasicBook {
+    override fun getIsbn() = isbn
 
-    fun setIsbn(value: String) {
+    override fun setIsbn(value: String) {
         isbn = value
     }
 
-    fun getTitle() = title
+    override fun getTitle() = title
 
-    fun setTitle(value: String) {
+    override fun setTitle(value: String) {
         title = value
     }
 
