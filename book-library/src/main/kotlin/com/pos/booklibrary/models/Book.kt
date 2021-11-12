@@ -22,7 +22,10 @@ class Book(
     private var publishYear: Int = -1,
 
     @Column(name = "genre")
-    private var genre: String = ""
+    private var genre: String = "",
+
+    @Column(name = "stock")
+    private var stock: Int = 1
 ) : BasicBook {
     override fun getIsbn() = isbn
 
@@ -52,5 +55,11 @@ class Book(
 
     fun setGenre(value: String) {
         genre = value
+    }
+
+    fun getStock() = stock
+
+    fun setStock(value: Int) {
+        stock = value
     }
 }

@@ -15,7 +15,7 @@
     <description>book-library</description>
     <properties>
         <java.version>11</java.version>
-        <kotlin.version>1.5.31</kotlin.version>
+        <kotlin.version>1.6.0-RC2</kotlin.version>
     </properties>
 
     <dependencies>
@@ -59,19 +59,20 @@
         </dependency>
         <dependency>
             <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-ui</artifactId>
-            <version>1.5.11</version>
+            <artifactId>springdoc-openapi-kotlin</artifactId>
+            <version>1.5.12</version>
         </dependency>
         <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-kotlin</artifactId>
-            <version>1.5.11</version>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-test</artifactId>
+            <version>${kotlin.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
     <build>
-        <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
-        <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
+        <sourceDirectory>src/main/kotlin</sourceDirectory>
+        <testSourceDirectory>src/test/kotlin</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -80,6 +81,23 @@
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
+                <version>${kotlin.version}</version>
+                <executions>
+                    <execution>
+                        <id>compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>test-compile</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>test-compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
                     <args>
                         <arg>-Xjsr305=strict</arg>
@@ -87,6 +105,7 @@
                     <compilerPlugins>
                         <plugin>spring</plugin>
                     </compilerPlugins>
+                    <jvmTarget>1.8</jvmTarget>
                 </configuration>
                 <dependencies>
                     <dependency>

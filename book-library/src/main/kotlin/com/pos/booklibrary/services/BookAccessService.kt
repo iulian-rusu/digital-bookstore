@@ -3,14 +3,12 @@ package com.pos.booklibrary.services
 import com.pos.booklibrary.controllers.BookController
 import com.pos.booklibrary.persistence.query.BookQueryCriteria
 import com.pos.booklibrary.interfaces.BookAccessInterface
-import com.pos.booklibrary.models.BasicBook
-import com.pos.booklibrary.models.BriefBook
+import com.pos.booklibrary.models.*
 import com.pos.booklibrary.persistence.BookAuthorRepository
 import com.pos.booklibrary.persistence.BookRepository
-import com.pos.booklibrary.models.Book
-import com.pos.booklibrary.models.BookAuthor
 import com.pos.booklibrary.persistence.CustomQueryRepository
 import com.pos.booklibrary.persistence.mappers.BookRowMapper
+import com.pos.booklibrary.persistence.query.OrderQueryCriteria
 import com.pos.booklibrary.views.BookAuthorModelAssembler
 import com.pos.booklibrary.views.BookModelAssembler
 import org.springframework.beans.factory.annotation.Autowired
@@ -57,8 +55,17 @@ class BookAccessService : BookAccessInterface {
             ?.let {
                 val model = if (verbose) it else BriefBook(it)
                 ResponseEntity.ok(bookAssembler.toModel(model))
-            }
-            ?: ResponseEntity.notFound().build()
+            } ?: ResponseEntity.notFound().build()
+
+    override fun postOrder(criteria: OrderQueryCriteria): ResponseEntity<Unit> {
+        return try {
+            customQueryRepository.executeByCriteria(criteria)
+            ResponseEntity.accepted().build()
+        } catch (e: Exception) {
+            println(e)
+            ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build()
+        }
+    }
 
     override fun postBook(newBook: Book): ResponseEntity<EntityModel<BasicBook>> {
         return try {

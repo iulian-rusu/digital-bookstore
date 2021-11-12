@@ -18,4 +18,7 @@ class CustomQueryRepository {
 
     fun <T, Mapper> findByCriteria(criteria: BasicQueryCriteria, mapper: Mapper): List<T>
             where Mapper : RowMapper<T> = jdbcTemplate.query(criteria.getQuery(), criteria.getParams(), mapper)
+
+    fun executeByCriteria(criteria: BasicQueryCriteria) =
+        jdbcTemplate.update(criteria.getQuery(), criteria.getParams())
 }

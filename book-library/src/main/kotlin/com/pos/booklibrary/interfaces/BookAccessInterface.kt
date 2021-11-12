@@ -4,6 +4,7 @@ import com.pos.booklibrary.models.BasicBook
 import com.pos.booklibrary.persistence.query.BookQueryCriteria
 import com.pos.booklibrary.models.Book
 import com.pos.booklibrary.models.BookAuthor
+import com.pos.booklibrary.persistence.query.OrderQueryCriteria
 import org.springframework.hateoas.CollectionModel
 import org.springframework.hateoas.EntityModel
 import org.springframework.http.ResponseEntity
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity
 interface BookAccessInterface {
     fun getAllBooks(criteria: BookQueryCriteria): CollectionModel<EntityModel<BasicBook>>
     fun getBook(isbn: String, verbose: Boolean): ResponseEntity<EntityModel<BasicBook>>
+    fun postOrder(criteria: OrderQueryCriteria): ResponseEntity<Unit>
     fun postBook(newBook: Book): ResponseEntity<EntityModel<BasicBook>>
     fun putBook(isbn: String, newBook: Book): ResponseEntity<EntityModel<BasicBook>>
     fun deleteBook(isbn: String): ResponseEntity<Unit>

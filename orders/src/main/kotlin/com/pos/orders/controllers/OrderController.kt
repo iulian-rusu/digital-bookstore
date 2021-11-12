@@ -34,6 +34,7 @@ class OrderController {
     @ApiResponses(
         value = [
             ApiResponse(responseCode = "201", description = "Order created"),
+            ApiResponse(responseCode = "409", description = "Missing or invalid order data"),
             ApiResponse(responseCode = "406", description = "Error creating order")
         ]
     )
@@ -45,6 +46,7 @@ class OrderController {
     @ApiResponses(
         value = [
             ApiResponse(responseCode = "201", description = "Order created/updated"),
+            ApiResponse(responseCode = "409", description = "Missing or invalid order data"),
             ApiResponse(responseCode = "406", description = "Error creating/updating order")
         ]
     )

@@ -5,7 +5,9 @@ CREATE TABLE IF NOT EXISTS books
     publisher    VARCHAR(64)  NOT NULL,
     publish_year INTEGER      NOT NULL,
     genre        VARCHAR(64)  NOT NULL,
-    PRIMARY KEY (isbn)
+    stock        INTEGER      NOT NULL,
+    CONSTRAINT pk_books PRIMARY KEY (isbn),
+    CONSTRAINT ck_books_stock CHECK (stock >= 0)
 );
 
 CREATE TABLE IF NOT EXISTS authors
@@ -13,19 +15,19 @@ CREATE TABLE IF NOT EXISTS authors
     author_id  INTEGER     NOT NULL AUTO_INCREMENT,
     first_name VARCHAR(64) NOT NULL,
     last_name  VARCHAR(64) NOT NULL,
-    PRIMARY KEY (author_id),
-    CONSTRAINT uk_author_name UNIQUE (first_name, last_name)
+    CONSTRAINT pk_authors PRIMARY KEY (author_id),
+    CONSTRAINT uk_authors_author_name UNIQUE (first_name, last_name)
 );
 
 CREATE TABLE IF NOT EXISTS book_authors
 (
     isbn         CHAR(13) NOT NULL,
-    author_index INTEGER NOT NULL,
-    author_id    INTEGER NOT NULL,
+    author_index INTEGER  NOT NULL,
+    author_id    INTEGER  NOT NULL,
     CONSTRAINT pk_book_authors PRIMARY KEY (author_index, isbn),
-    CONSTRAINT fk_isbn FOREIGN KEY (isbn) REFERENCES books (isbn) ON DELETE CASCADE,
-    CONSTRAINT fk_author_id FOREIGN KEY (author_id) REFERENCES authors (author_id) ON DELETE CASCADE,
-    CONSTRAINT uk_author_index UNIQUE (author_id, isbn)
+    CONSTRAINT fk_book_authors_isbn FOREIGN KEY (isbn) REFERENCES books (isbn) ON DELETE CASCADE,
+    CONSTRAINT fk_book_authors_author_id FOREIGN KEY (author_id) REFERENCES authors (author_id) ON DELETE CASCADE,
+    CONSTRAINT uk_book_authors_author_index UNIQUE (author_id, isbn)
 );
 
 CREATE INDEX idx_book_publish_year ON books (publish_year);

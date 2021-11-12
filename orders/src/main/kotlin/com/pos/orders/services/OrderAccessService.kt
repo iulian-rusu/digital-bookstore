@@ -2,6 +2,7 @@ package com.pos.orders.services
 
 import com.pos.orders.controllers.OrderController
 import com.pos.orders.interfaces.OrderAccessInterface
+import com.pos.orders.interfaces.StockValidationInterface
 import com.pos.orders.models.Order
 import com.pos.orders.views.OrderModelAssembler
 import org.springframework.beans.factory.annotation.Autowired
@@ -22,6 +23,9 @@ class OrderAccessService : OrderAccessInterface {
 
     @Autowired
     private lateinit var orderModelAssembler: OrderModelAssembler
+
+    @Autowired
+    private lateinit var stockValidationInterface: StockValidationInterface
 
     override fun getAllOrders(clientId: Long): CollectionModel<EntityModel<Order>> =
         mongoTemplate.findAll(Order::class.java, collectionNameFor(clientId))
@@ -45,6 +49,12 @@ class OrderAccessService : OrderAccessInterface {
             ?: ResponseEntity.notFound().build()
 
     override fun postOrder(clientId: Long, order: Order): ResponseEntity<EntityModel<Order>> {
+        if (!validOrder(order))
+            return ResponseEntity.status(HttpStatus.CONFLICT).build()
+
+        if (!stockValidationInterface.postOrder(order))
+            return ResponseEntity.status(HttpStatus.CONFLICT).build()
+
         return try {
             mongoTemplate.save(order, collectionNameFor(clientId))
             val entityModel = orderModelAssembler.toModelWithClientId(order, clientId)
@@ -89,4 +99,8 @@ class OrderAccessService : OrderAccessInterface {
     }
 
     private fun collectionNameFor(clientId: Long) = "client$clientId"
+    private fun validOrder(order: Order) =
+        order.getItems().all {
+            it.getPrice() >= 0 && it.getQuantity() >= 0
+        }
 }
