@@ -29,7 +29,7 @@ class AuthorSearchCriteria(queryParams: Map<String, String>) : PagedSearchCriter
                 conditionBuilder.append(" last_name = :lastName AND")
         } else {
             conditionBuilder.append(
-                " LOCATE(LOWER(:firstName), LOWER(last_name)) AND" +
+                " LOCATE(LOWER(:firstName), LOWER(first_name)) AND" +
                         " LOCATE(LOWER(:lastName), LOWER(last_name)) AND"
             )
         }
