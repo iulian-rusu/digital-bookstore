@@ -40,15 +40,22 @@ class BookAccessService : BookAccessInterface {
     @Autowired
     private lateinit var bookAuthorAssembler: BookAuthorModelAssembler
 
-    override fun getAllBooks(query: BookSearchQuery): CollectionModel<EntityModel<BasicBook>> =
-        customQueryRepository.find(query, BookRowMapper())
-            .map(bookAssembler::toModel)
-            .let { modelList ->
-                CollectionModel.of(
-                    modelList,
-                    linkTo(methodOn(BookController::class.java).getAllBooks(emptyMap())).withSelfRel()
-                )
-            }
+    override fun getAllBooks(query: BookSearchQuery): ResponseEntity<CollectionModel<EntityModel<BasicBook>>> =
+        try {
+            customQueryRepository.find(query, BookRowMapper())
+                .map(bookAssembler::toModel)
+                .let { modelList ->
+                    ResponseEntity.ok(
+                        CollectionModel.of(
+                            modelList,
+                            linkTo(methodOn(BookController::class.java).getAllBooks(emptyMap())).withSelfRel()
+                        )
+                    )
+                }
+        } catch (e: Exception) {
+            println(e)
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).build()
+        }
 
     override fun getBook(isbn: String, verbose: Boolean): ResponseEntity<EntityModel<BasicBook>> =
         bookRepository.findByIdOrNull(isbn)

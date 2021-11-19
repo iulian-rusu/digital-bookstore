@@ -3,23 +3,17 @@ package com.pos.booklibrary.persistence.query
 class AuthorSearchQuery(queryParams: Map<String, String>) : PagedSearchQuery(queryParams) {
     private val firstName: String
     private val lastName: String
-    private val paramMap: Map<String, Any>
 
     init {
         firstName = queryParams["first_name"] ?: ""
         lastName = queryParams["last_name"] ?: ""
-        paramMap = mapOf(
-            "firstName" to firstName,
-            "lastName" to lastName,
-            "itemsPerPage" to itemsPerPage,
-            "offset" to offset
-        )
+
+        params["firstName"] = firstName
+        params["lastName"] = lastName
     }
 
-    override fun getParams() = paramMap
-
     override fun getSql(): String {
-        val baseQueryBuilder = StringBuilder("SELECT * FROM authors")
+        val sqlBuilder = StringBuilder("SELECT * FROM authors")
         val conditionBuilder = StringBuilder(" WHERE")
         val initialLength = conditionBuilder.length
         if (exactMatch) {
@@ -35,7 +29,7 @@ class AuthorSearchQuery(queryParams: Map<String, String>) : PagedSearchQuery(que
         }
         conditionBuilder.append(" 1 LIMIT :itemsPerPage OFFSET :offset")
         if (conditionBuilder.length > initialLength)
-            baseQueryBuilder.append(conditionBuilder)
-        return baseQueryBuilder.toString()
+            sqlBuilder.append(conditionBuilder)
+        return sqlBuilder.toString()
     }
 }

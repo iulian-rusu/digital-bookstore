@@ -17,7 +17,8 @@ class AuthorController {
 
     @Operation(summary = "Get all authors")
     @ApiResponses(value = [
-        ApiResponse(responseCode = "200", description = "Authors retrieved")
+        ApiResponse(responseCode = "200", description = "Authors retrieved"),
+        ApiResponse(responseCode = "400", description = "Bad request parameters")
     ])
     @GetMapping("/authors")
     fun getAllAuthors(@RequestParam params: Map<String, String>) =

@@ -21,7 +21,10 @@ class BookController {
     private lateinit var bookAccessService: BookAccessService
 
     @Operation(summary = "Get all books")
-    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Retrieved book list")])
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Retrieved book list"),
+        ApiResponse(responseCode = "400", description = "Bad request parameters")
+    ])
     @GetMapping("/books")
     fun getAllBooks(@RequestParam params: Map<String, String>) =
         bookAccessService.getAllBooks(BookSearchQuery(params))

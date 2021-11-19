@@ -30,15 +30,22 @@ class AuthorAccessService : AuthorAccessInterface {
     @Autowired
     private lateinit var authorAssembler: AuthorModelAssembler
 
-    override fun getAllAuthors(query: AuthorSearchQuery): CollectionModel<EntityModel<Author>> =
-        customQueryRepository.find(query, AuthorRowMapper())
-            .map(authorAssembler::toModel)
-            .let { modelList ->
-                CollectionModel.of(
-                    modelList,
-                    linkTo(methodOn(AuthorController::class.java).getAllAuthors(mapOf())).withSelfRel()
-                )
-            }
+    override fun getAllAuthors(query: AuthorSearchQuery): ResponseEntity<CollectionModel<EntityModel<Author>>> =
+        try {
+            customQueryRepository.find(query, AuthorRowMapper())
+                .map(authorAssembler::toModel)
+                .let { modelList ->
+                    ResponseEntity.ok(
+                        CollectionModel.of(
+                            modelList,
+                            linkTo(methodOn(AuthorController::class.java).getAllAuthors(mapOf())).withSelfRel()
+                        )
+                    )
+                }
+        } catch (e: Exception) {
+            println(e)
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).build()
+        }
 
     override fun getAuthor(id: Long): ResponseEntity<EntityModel<Author>> = authorRepository.findByIdOrNull(id)
         ?.let { ResponseEntity.ok(authorAssembler.toModel(it)) }

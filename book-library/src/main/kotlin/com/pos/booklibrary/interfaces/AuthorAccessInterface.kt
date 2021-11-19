@@ -7,7 +7,7 @@ import org.springframework.hateoas.EntityModel
 import org.springframework.http.ResponseEntity
 
 interface AuthorAccessInterface {
-    fun getAllAuthors(query: AuthorSearchQuery): CollectionModel<EntityModel<Author>>
+    fun getAllAuthors(query: AuthorSearchQuery): ResponseEntity<CollectionModel<EntityModel<Author>>>
     fun getAuthor(id: Long): ResponseEntity<EntityModel<Author>>
     fun postAuthor(newAuthor: Author): ResponseEntity<EntityModel<Author>>
     fun putAuthor(id: Long, newAuthor: Author): ResponseEntity<EntityModel<Author>>

@@ -1,6 +1,7 @@
 package com.pos.booklibrary.persistence.query
 
-interface ParametrizedQuery {
-    fun getSql(): String
-    fun getParams(): Map<String, Any>
+abstract class ParametrizedQuery {
+    val params: HashMap<String, Any> = hashMapOf()
+
+    abstract fun getSql(): String
 }

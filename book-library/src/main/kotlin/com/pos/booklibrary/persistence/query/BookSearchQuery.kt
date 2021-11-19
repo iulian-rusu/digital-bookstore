@@ -5,27 +5,21 @@ class BookSearchQuery(queryParams: Map<String, String>) : PagedSearchQuery(query
     private val publisher: String
     private val publishYear: Int
     private val genre: String
-    private val paramMap: Map<String, Any>
 
     init {
         title = queryParams["title"] ?: ""
         publisher = queryParams["publisher"] ?: ""
         publishYear = queryParams["publish_year"]?.toIntOrNull() ?: -1
         genre = queryParams["genre"] ?: ""
-        paramMap = mapOf(
-            "title" to title,
-            "genre" to genre,
-            "publishYear" to publishYear,
-            "publisher" to publisher,
-            "itemsPerPage" to itemsPerPage,
-            "offset" to offset
-        )
+
+        params["title"] = title
+        params["genre"] = genre
+        params["publishYear"] = publishYear
+        params["publisher"] = publisher
     }
 
-    override fun getParams() = paramMap
-
     override fun getSql(): String {
-        val baseQueryBuilder = StringBuilder("SELECT * FROM books")
+        val sqlBuilder = StringBuilder("SELECT * FROM books")
         val conditionBuilder = StringBuilder(" WHERE")
         val initialLength = conditionBuilder.length
         if (exactMatch) {
@@ -48,7 +42,7 @@ class BookSearchQuery(queryParams: Map<String, String>) : PagedSearchQuery(query
             conditionBuilder.append(" 1")
         conditionBuilder.append(" LIMIT :itemsPerPage OFFSET :offset")
         if (conditionBuilder.length > initialLength)
-            baseQueryBuilder.append(conditionBuilder)
-        return baseQueryBuilder.toString()
+            sqlBuilder.append(conditionBuilder)
+        return sqlBuilder.toString()
     }
 }

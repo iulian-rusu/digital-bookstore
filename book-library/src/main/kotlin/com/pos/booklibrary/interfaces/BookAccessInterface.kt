@@ -10,7 +10,7 @@ import org.springframework.hateoas.EntityModel
 import org.springframework.http.ResponseEntity
 
 interface BookAccessInterface {
-    fun getAllBooks(query: BookSearchQuery): CollectionModel<EntityModel<BasicBook>>
+    fun getAllBooks(query: BookSearchQuery): ResponseEntity<CollectionModel<EntityModel<BasicBook>>>
     fun getBook(isbn: String, verbose: Boolean): ResponseEntity<EntityModel<BasicBook>>
     fun postOrder(query: OrderUpdateQuery): ResponseEntity<Unit>
     fun postBook(newBook: Book): ResponseEntity<EntityModel<BasicBook>>
