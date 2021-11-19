@@ -1,11 +1,11 @@
 package com.pos.booklibrary.services
 
 import com.pos.booklibrary.controllers.AuthorController
-import com.pos.booklibrary.persistence.query.AuthorSearchCriteria
+import com.pos.booklibrary.persistence.query.AuthorSearchQuery
 import com.pos.booklibrary.interfaces.AuthorAccessInterface
 import com.pos.booklibrary.persistence.AuthorRepository
 import com.pos.booklibrary.models.Author
-import com.pos.booklibrary.persistence.CustomQueryRepository
+import com.pos.booklibrary.persistence.GenericQueryRepository
 import com.pos.booklibrary.persistence.mappers.AuthorRowMapper
 import com.pos.booklibrary.views.AuthorModelAssembler
 import org.springframework.beans.factory.annotation.Autowired
@@ -25,13 +25,13 @@ class AuthorAccessService : AuthorAccessInterface {
     private lateinit var authorRepository: AuthorRepository
 
     @Autowired
-    private lateinit var customQueryRepository: CustomQueryRepository
+    private lateinit var customQueryRepository: GenericQueryRepository
 
     @Autowired
     private lateinit var authorAssembler: AuthorModelAssembler
 
-    override fun getAllAuthors(criteria: AuthorSearchCriteria): CollectionModel<EntityModel<Author>> =
-        customQueryRepository.findByCriteria(criteria, AuthorRowMapper())
+    override fun getAllAuthors(query: AuthorSearchQuery): CollectionModel<EntityModel<Author>> =
+        customQueryRepository.find(query, AuthorRowMapper())
             .map(authorAssembler::toModel)
             .let { modelList ->
                 CollectionModel.of(

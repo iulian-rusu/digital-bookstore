@@ -2,14 +2,14 @@ package com.pos.booklibrary.persistence.query
 
 import com.pos.booklibrary.models.BookOrder
 
-class OrderQueryCriteria(orders: List<BookOrder>) : QueryCriteria {
+class OrderUpdateQuery(orders: List<BookOrder>) : ParametrizedQuery {
     private val paramMap: Map<String, UInt>
 
     init {
         paramMap = orders.associate { it.isbn to it.quantity }
     }
 
-    override fun getQuery(): String {
+    override fun getSql(): String {
         val queryBuilder = StringBuilder("UPDATE books INNER JOIN(")
         var index = 1
         paramMap.forEach { (isbn, quantity) ->

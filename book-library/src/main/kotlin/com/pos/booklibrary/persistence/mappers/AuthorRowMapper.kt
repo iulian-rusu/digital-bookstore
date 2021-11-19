@@ -5,7 +5,7 @@ import org.springframework.jdbc.core.RowMapper
 import java.sql.ResultSet
 
 class AuthorRowMapper : RowMapper<Author> {
-    override fun mapRow(rs: ResultSet, rowNum: Int): Author =
+    override fun mapRow(rs: ResultSet, rowNum: Int) =
         Author(
             id = rs.getLong("author_id"),
             firstName = rs.getString("first_name"),

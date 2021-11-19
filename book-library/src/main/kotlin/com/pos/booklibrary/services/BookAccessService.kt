@@ -1,14 +1,14 @@
 package com.pos.booklibrary.services
 
 import com.pos.booklibrary.controllers.BookController
-import com.pos.booklibrary.persistence.query.BookSearchCriteria
+import com.pos.booklibrary.persistence.query.BookSearchQuery
 import com.pos.booklibrary.interfaces.BookAccessInterface
 import com.pos.booklibrary.models.*
 import com.pos.booklibrary.persistence.BookAuthorRepository
 import com.pos.booklibrary.persistence.BookRepository
-import com.pos.booklibrary.persistence.CustomQueryRepository
+import com.pos.booklibrary.persistence.GenericQueryRepository
 import com.pos.booklibrary.persistence.mappers.BookRowMapper
-import com.pos.booklibrary.persistence.query.OrderQueryCriteria
+import com.pos.booklibrary.persistence.query.OrderUpdateQuery
 import com.pos.booklibrary.views.BookAuthorModelAssembler
 import com.pos.booklibrary.views.BookModelAssembler
 import org.springframework.beans.factory.annotation.Autowired
@@ -32,7 +32,7 @@ class BookAccessService : BookAccessInterface {
     private lateinit var bookAuthorRepository: BookAuthorRepository
 
     @Autowired
-    private lateinit var customQueryRepository: CustomQueryRepository
+    private lateinit var customQueryRepository: GenericQueryRepository
 
     @Autowired
     private lateinit var bookAssembler: BookModelAssembler
@@ -40,8 +40,8 @@ class BookAccessService : BookAccessInterface {
     @Autowired
     private lateinit var bookAuthorAssembler: BookAuthorModelAssembler
 
-    override fun getAllBooks(criteria: BookSearchCriteria): CollectionModel<EntityModel<BasicBook>> =
-        customQueryRepository.findByCriteria(criteria, BookRowMapper())
+    override fun getAllBooks(query: BookSearchQuery): CollectionModel<EntityModel<BasicBook>> =
+        customQueryRepository.find(query, BookRowMapper())
             .map(bookAssembler::toModel)
             .let { modelList ->
                 CollectionModel.of(
@@ -57,9 +57,9 @@ class BookAccessService : BookAccessInterface {
                 ResponseEntity.ok(bookAssembler.toModel(model))
             } ?: ResponseEntity.notFound().build()
 
-    override fun postOrder(criteria: OrderQueryCriteria): ResponseEntity<Unit> {
+    override fun postOrder(query: OrderUpdateQuery): ResponseEntity<Unit> {
         return try {
-            customQueryRepository.executeByCriteria(criteria)
+            customQueryRepository.execute(query)
             ResponseEntity.accepted().build()
         } catch (e: Exception) {
             println(e)

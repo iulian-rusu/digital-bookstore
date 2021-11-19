@@ -1,6 +1,6 @@
 package com.pos.booklibrary.persistence.query
 
-class BookSearchCriteria(queryParams: Map<String, String>) : PagedSearchCriteria(queryParams) {
+class BookSearchQuery(queryParams: Map<String, String>) : PagedSearchQuery(queryParams) {
     private val title: String
     private val publisher: String
     private val publishYear: Int
@@ -24,7 +24,7 @@ class BookSearchCriteria(queryParams: Map<String, String>) : PagedSearchCriteria
 
     override fun getParams() = paramMap
 
-    override fun getQuery(): String {
+    override fun getSql(): String {
         val baseQueryBuilder = StringBuilder("SELECT * FROM books")
         val conditionBuilder = StringBuilder(" WHERE")
         val initialLength = conditionBuilder.length

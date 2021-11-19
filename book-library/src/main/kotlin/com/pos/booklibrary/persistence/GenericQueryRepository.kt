@@ -1,6 +1,6 @@
 package com.pos.booklibrary.persistence
 
-import com.pos.booklibrary.persistence.query.QueryCriteria
+import com.pos.booklibrary.persistence.query.ParametrizedQuery
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.jdbc.core.RowMapper
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
@@ -12,13 +12,13 @@ import org.springframework.stereotype.Repository
  * and @Query methods, so a JdbcTemplate is used instead.
  */
 @Repository
-class CustomQueryRepository {
+class GenericQueryRepository {
     @Autowired
     private lateinit var jdbcTemplate: NamedParameterJdbcTemplate
 
-    fun <T, Mapper> findByCriteria(criteria: QueryCriteria, mapper: Mapper): List<T>
-            where Mapper : RowMapper<T> = jdbcTemplate.query(criteria.getQuery(), criteria.getParams(), mapper)
+    fun <T, Mapper> find(query: ParametrizedQuery, mapper: Mapper): List<T>
+            where Mapper : RowMapper<T> = jdbcTemplate.query(query.getSql(), query.getParams(), mapper)
 
-    fun executeByCriteria(criteria: QueryCriteria) =
-        jdbcTemplate.update(criteria.getQuery(), criteria.getParams())
+    fun execute(query: ParametrizedQuery) =
+        jdbcTemplate.update(query.getSql(), query.getParams())
 }

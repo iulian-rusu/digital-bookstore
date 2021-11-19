@@ -1,18 +1,18 @@
 package com.pos.booklibrary.interfaces
 
 import com.pos.booklibrary.models.BasicBook
-import com.pos.booklibrary.persistence.query.BookSearchCriteria
+import com.pos.booklibrary.persistence.query.BookSearchQuery
 import com.pos.booklibrary.models.Book
 import com.pos.booklibrary.models.BookAuthor
-import com.pos.booklibrary.persistence.query.OrderQueryCriteria
+import com.pos.booklibrary.persistence.query.OrderUpdateQuery
 import org.springframework.hateoas.CollectionModel
 import org.springframework.hateoas.EntityModel
 import org.springframework.http.ResponseEntity
 
 interface BookAccessInterface {
-    fun getAllBooks(criteria: BookSearchCriteria): CollectionModel<EntityModel<BasicBook>>
+    fun getAllBooks(query: BookSearchQuery): CollectionModel<EntityModel<BasicBook>>
     fun getBook(isbn: String, verbose: Boolean): ResponseEntity<EntityModel<BasicBook>>
-    fun postOrder(criteria: OrderQueryCriteria): ResponseEntity<Unit>
+    fun postOrder(query: OrderUpdateQuery): ResponseEntity<Unit>
     fun postBook(newBook: Book): ResponseEntity<EntityModel<BasicBook>>
     fun putBook(isbn: String, newBook: Book): ResponseEntity<EntityModel<BasicBook>>
     fun deleteBook(isbn: String): ResponseEntity<Unit>

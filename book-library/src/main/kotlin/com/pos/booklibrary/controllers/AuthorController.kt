@@ -1,6 +1,6 @@
 package com.pos.booklibrary.controllers
 
-import com.pos.booklibrary.persistence.query.AuthorSearchCriteria
+import com.pos.booklibrary.persistence.query.AuthorSearchQuery
 import com.pos.booklibrary.models.Author
 import com.pos.booklibrary.services.AuthorAccessService
 import io.swagger.v3.oas.annotations.Operation
@@ -21,7 +21,7 @@ class AuthorController {
     ])
     @GetMapping("/authors")
     fun getAllAuthors(@RequestParam params: Map<String, String>) =
-        authorAccessService.getAllAuthors(AuthorSearchCriteria(params))
+        authorAccessService.getAllAuthors(AuthorSearchQuery(params))
 
     @Operation(summary = "Get author specified by ID")
     @ApiResponses(value = [
@@ -47,7 +47,8 @@ class AuthorController {
         ApiResponse(responseCode = "409", description = "Error when inserting author data"),
     ])
     @PutMapping("/authors/{id}")
-    fun putAuthor(@PathVariable id: Long, @RequestBody newAuthor: Author) = authorAccessService.putAuthor(id, newAuthor)
+    fun putAuthor(@PathVariable id: Long, @RequestBody newAuthor: Author) =
+        authorAccessService.putAuthor(id, newAuthor)
 
     @Operation(summary = "Delete a single author")
     @ApiResponses(value = [

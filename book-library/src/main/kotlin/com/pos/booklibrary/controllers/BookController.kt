@@ -1,10 +1,10 @@
 package com.pos.booklibrary.controllers
 
 import com.pos.booklibrary.models.BasicBook
-import com.pos.booklibrary.persistence.query.BookSearchCriteria
+import com.pos.booklibrary.persistence.query.BookSearchQuery
 import com.pos.booklibrary.models.Book
 import com.pos.booklibrary.models.BookOrder
-import com.pos.booklibrary.persistence.query.OrderQueryCriteria
+import com.pos.booklibrary.persistence.query.OrderUpdateQuery
 import com.pos.booklibrary.services.BookAccessService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -24,7 +24,7 @@ class BookController {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Retrieved book list")])
     @GetMapping("/books")
     fun getAllBooks(@RequestParam params: Map<String, String>) =
-        bookAccessService.getAllBooks(BookSearchCriteria(params))
+        bookAccessService.getAllBooks(BookSearchQuery(params))
 
     @Operation(summary = "Get a single book")
     @ApiResponses(
@@ -47,7 +47,7 @@ class BookController {
         ]
     )
     @PostMapping("/orders")
-    fun postBookOrder(@RequestBody orders: List<BookOrder>) = bookAccessService.postOrder(OrderQueryCriteria(orders))
+    fun postBookOrder(@RequestBody orders: List<BookOrder>) = bookAccessService.postOrder(OrderUpdateQuery(orders))
 
     @Operation(summary = "Create a single book")
     @ApiResponses(

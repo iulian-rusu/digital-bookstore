@@ -5,7 +5,7 @@ import org.springframework.jdbc.core.RowMapper
 import java.sql.ResultSet
 
 class BookRowMapper : RowMapper<Book> {
-    override fun mapRow(rs: ResultSet, rowNum: Int): Book =
+    override fun mapRow(rs: ResultSet, rowNum: Int) =
         Book(
             isbn = rs.getString("isbn"),
             title = rs.getString("title"),
