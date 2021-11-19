@@ -1,6 +1,6 @@
 package com.pos.booklibrary.persistence
 
-import com.pos.booklibrary.persistence.query.BasicQueryCriteria
+import com.pos.booklibrary.persistence.query.QueryCriteria
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.jdbc.core.RowMapper
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
@@ -16,9 +16,9 @@ class CustomQueryRepository {
     @Autowired
     private lateinit var jdbcTemplate: NamedParameterJdbcTemplate
 
-    fun <T, Mapper> findByCriteria(criteria: BasicQueryCriteria, mapper: Mapper): List<T>
+    fun <T, Mapper> findByCriteria(criteria: QueryCriteria, mapper: Mapper): List<T>
             where Mapper : RowMapper<T> = jdbcTemplate.query(criteria.getQuery(), criteria.getParams(), mapper)
 
-    fun executeByCriteria(criteria: BasicQueryCriteria) =
+    fun executeByCriteria(criteria: QueryCriteria) =
         jdbcTemplate.update(criteria.getQuery(), criteria.getParams())
 }

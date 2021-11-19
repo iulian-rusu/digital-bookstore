@@ -1,10 +1,9 @@
 package com.pos.booklibrary.persistence.query
 
-abstract class PagedSearchQueryCriteria(queryParams: Map<String, String>) : BasicQueryCriteria {
+abstract class PagedSearchCriteria(queryParams: Map<String, String>) : QueryCriteria {
     companion object {
         const val DEFAULT_PAGE = 1
         const val DEFAULT_PAGE_SIZE = 10
-        const val DEFAULT_EXACT_MATCH = false
     }
 
     private val page: Int
@@ -15,7 +14,7 @@ abstract class PagedSearchQueryCriteria(queryParams: Map<String, String>) : Basi
     init {
         page = queryParams["page"]?.toIntOrNull() ?: DEFAULT_PAGE
         itemsPerPage = queryParams["items_per_page"]?.toIntOrNull() ?: DEFAULT_PAGE_SIZE
-        exactMatch = queryParams["match"]?.let { it == "exact" } ?: DEFAULT_EXACT_MATCH
+        exactMatch = queryParams["match"]?.let { it == "exact" } ?: false
         offset = (page - 1) * itemsPerPage
     }
 }

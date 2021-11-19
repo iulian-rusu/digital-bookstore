@@ -2,7 +2,7 @@ package com.pos.booklibrary.persistence.query
 
 import com.pos.booklibrary.models.BookOrder
 
-class OrderQueryCriteria(orders: List<BookOrder>) : BasicQueryCriteria {
+class OrderQueryCriteria(orders: List<BookOrder>) : QueryCriteria {
     private val paramMap: Map<String, UInt>
 
     init {

@@ -1,7 +1,7 @@
 package com.pos.booklibrary.services
 
 import com.pos.booklibrary.controllers.AuthorController
-import com.pos.booklibrary.persistence.query.AuthorQueryCriteria
+import com.pos.booklibrary.persistence.query.AuthorSearchCriteria
 import com.pos.booklibrary.interfaces.AuthorAccessInterface
 import com.pos.booklibrary.persistence.AuthorRepository
 import com.pos.booklibrary.models.Author
@@ -30,7 +30,7 @@ class AuthorAccessService : AuthorAccessInterface {
     @Autowired
     private lateinit var authorAssembler: AuthorModelAssembler
 
-    override fun getAllAuthors(criteria: AuthorQueryCriteria): CollectionModel<EntityModel<Author>> =
+    override fun getAllAuthors(criteria: AuthorSearchCriteria): CollectionModel<EntityModel<Author>> =
         customQueryRepository.findByCriteria(criteria, AuthorRowMapper())
             .map(authorAssembler::toModel)
             .let { modelList ->

@@ -1,7 +1,7 @@
 package com.pos.booklibrary.controllers
 
 import com.pos.booklibrary.models.BasicBook
-import com.pos.booklibrary.persistence.query.BookQueryCriteria
+import com.pos.booklibrary.persistence.query.BookSearchCriteria
 import com.pos.booklibrary.models.Book
 import com.pos.booklibrary.models.BookOrder
 import com.pos.booklibrary.persistence.query.OrderQueryCriteria
@@ -24,7 +24,7 @@ class BookController {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Retrieved book list")])
     @GetMapping("/books")
     fun getAllBooks(@RequestParam params: Map<String, String>) =
-        bookAccessService.getAllBooks(BookQueryCriteria(params))
+        bookAccessService.getAllBooks(BookSearchCriteria(params))
 
     @Operation(summary = "Get a single book")
     @ApiResponses(
@@ -34,8 +34,8 @@ class BookController {
         ]
     )
     @GetMapping("/books/{isbn}")
-    fun getBook(@PathVariable isbn: String, @RequestParam verbose: String?): ResponseEntity<EntityModel<BasicBook>> {
-        val flag = verbose?.let { it != "false" } ?: true
+    fun getBook(@PathVariable isbn: String, @RequestParam verbose: Boolean?): ResponseEntity<EntityModel<BasicBook>> {
+        val flag =verbose ?: true
         return bookAccessService.getBook(isbn, flag)
     }
 
@@ -47,8 +47,7 @@ class BookController {
         ]
     )
     @PostMapping("/orders")
-    fun postBookOrder(@RequestBody orders: List<BookOrder>) =
-        bookAccessService.postOrder(OrderQueryCriteria(orders))
+    fun postBookOrder(@RequestBody orders: List<BookOrder>) = bookAccessService.postOrder(OrderQueryCriteria(orders))
 
     @Operation(summary = "Create a single book")
     @ApiResponses(
