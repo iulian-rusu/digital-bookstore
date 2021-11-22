@@ -2,7 +2,7 @@ package com.pos.booklibrary.persistence.query
 
 import com.pos.booklibrary.models.BookOrder
 
-class OrderUpdateQuery(orders: List<BookOrder>) : ParametrizedQuery() {
+class UpdateOrderQuery(orders: List<BookOrder>) : ParametrizedQuery() {
     init {
         params += orders.associate { it.isbn to it.quantity }
     }

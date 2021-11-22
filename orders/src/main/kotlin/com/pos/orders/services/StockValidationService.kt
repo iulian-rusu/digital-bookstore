@@ -4,6 +4,7 @@ import com.pos.orders.interfaces.StockValidationInterface
 import com.pos.orders.models.Order
 import net.minidev.json.JSONArray
 import net.minidev.json.JSONObject
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
@@ -15,6 +16,8 @@ class StockValidationService : StockValidationInterface {
         private val bookLibraryPort = System.getenv("BOOK_LIBRARY_PORT") ?: "8080"
         private val stockEndpoint = "http://$bookLibraryHost:$bookLibraryPort/api/book-library/orders"
     }
+
+    private val logger = LoggerFactory.getLogger(StockValidationService::class.java)
 
     override fun postOrder(order: Order): Boolean {
         val restTemplate = RestTemplate()
@@ -28,7 +31,7 @@ class StockValidationService : StockValidationInterface {
             val response = restTemplate.postForEntity(stockEndpoint, requestBody, JSONArray::class.java)
             response.statusCode == HttpStatus.ACCEPTED
         } catch (e: Exception) {
-            println(e)
+            logger.error("postOrder(orderId=${order.getOrderId()}): $e")
             false
         }
     }

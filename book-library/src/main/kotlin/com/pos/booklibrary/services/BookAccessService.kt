@@ -1,16 +1,17 @@
 package com.pos.booklibrary.services
 
 import com.pos.booklibrary.controllers.BookController
-import com.pos.booklibrary.persistence.query.BookSearchQuery
+import com.pos.booklibrary.persistence.query.SearchBookQuery
 import com.pos.booklibrary.interfaces.BookAccessInterface
 import com.pos.booklibrary.models.*
 import com.pos.booklibrary.persistence.BookAuthorRepository
 import com.pos.booklibrary.persistence.BookRepository
 import com.pos.booklibrary.persistence.GenericQueryRepository
 import com.pos.booklibrary.persistence.mappers.BookRowMapper
-import com.pos.booklibrary.persistence.query.OrderUpdateQuery
+import com.pos.booklibrary.persistence.query.UpdateOrderQuery
 import com.pos.booklibrary.views.BookAuthorModelAssembler
 import com.pos.booklibrary.views.BookModelAssembler
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.hateoas.CollectionModel
@@ -40,7 +41,9 @@ class BookAccessService : BookAccessInterface {
     @Autowired
     private lateinit var bookAuthorAssembler: BookAuthorModelAssembler
 
-    override fun getAllBooks(query: BookSearchQuery): ResponseEntity<CollectionModel<EntityModel<BasicBook>>> =
+    private val logger = LoggerFactory.getLogger(BookAccessService::class.java)
+
+    override fun getAllBooks(query: SearchBookQuery): ResponseEntity<CollectionModel<EntityModel<BasicBook>>> =
         try {
             customQueryRepository.find(query, BookRowMapper())
                 .map(bookAssembler::toModel)
@@ -53,7 +56,7 @@ class BookAccessService : BookAccessInterface {
                     )
                 }
         } catch (e: Exception) {
-            println(e)
+            logger.error("getAllBooks(): $e")
             ResponseEntity.status(HttpStatus.BAD_REQUEST).build()
         }
 
@@ -64,12 +67,12 @@ class BookAccessService : BookAccessInterface {
                 ResponseEntity.ok(bookAssembler.toModel(model))
             } ?: ResponseEntity.notFound().build()
 
-    override fun postOrder(query: OrderUpdateQuery): ResponseEntity<Unit> {
+    override fun postOrder(query: UpdateOrderQuery): ResponseEntity<Unit> {
         return try {
             customQueryRepository.execute(query)
             ResponseEntity.accepted().build()
         } catch (e: Exception) {
-            println(e)
+            logger.error("postOrder(): $e")
             ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build()
         }
     }
@@ -84,7 +87,7 @@ class BookAccessService : BookAccessInterface {
                 .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
                 .body(entityModel)
         } catch (e: Exception) {
-            println(e)
+            logger.error("postBook(isbn=${newBook.getIsbn()}): $e")
             ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build()
         }
     }
@@ -107,7 +110,7 @@ class BookAccessService : BookAccessInterface {
                     .body(entityModel)
             }
         } catch (e: Exception) {
-            println(e)
+            logger.error("putBook(isbn=$isbn): $e")
             return ResponseEntity.status(HttpStatus.CONFLICT).build()
         }
     }
@@ -117,7 +120,7 @@ class BookAccessService : BookAccessInterface {
             bookRepository.deleteById(isbn)
             ResponseEntity.noContent().build()
         } catch (e: Exception) {
-            println(e)
+            logger.error("deleteBook(isbn=$isbn): $e")
             ResponseEntity.notFound().build()
         }
     }
@@ -138,7 +141,7 @@ class BookAccessService : BookAccessInterface {
                 ResponseEntity.ok(bookAuthorAssembler.toModel(bookAuthor))
             } ?: ResponseEntity.notFound().build()
         } catch (e: Exception) {
-            println(e)
+            logger.error("getBookAuthor(isbn=$isbn, index=$index): $e")
             ResponseEntity.notFound().build()
         }
     }
@@ -155,7 +158,7 @@ class BookAccessService : BookAccessInterface {
             }
             ResponseEntity.accepted().body(getBookAuthors(isbn))
         } catch (e: Exception) {
-            println(e)
+            logger.error("postBookAuthors(isbn=$isbn): $e")
             ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build()
         }
     }
@@ -165,7 +168,7 @@ class BookAccessService : BookAccessInterface {
             bookAuthorRepository.deleteBookAuthorByIndex(isbn, index)
             ResponseEntity.noContent().build()
         } catch (e: Exception) {
-            println(e)
+            logger.error("deleteBookAuthor(isbn=$isbn, index=$index): $e")
             ResponseEntity.notFound().build()
         }
     }
@@ -175,7 +178,7 @@ class BookAccessService : BookAccessInterface {
             bookAuthorRepository.deleteBookAuthors(isbn)
             ResponseEntity.noContent().build()
         } catch (e: Exception) {
-            println(e)
+            logger.error("deleteBookAuthors(isbn=$isbn): $e")
             ResponseEntity.notFound().build()
         }
     }

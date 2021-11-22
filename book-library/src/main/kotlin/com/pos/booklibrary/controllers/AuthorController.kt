@@ -1,6 +1,6 @@
 package com.pos.booklibrary.controllers
 
-import com.pos.booklibrary.persistence.query.AuthorSearchQuery
+import com.pos.booklibrary.persistence.query.SearchAuthorQuery
 import com.pos.booklibrary.models.Author
 import com.pos.booklibrary.services.AuthorAccessService
 import io.swagger.v3.oas.annotations.Operation
@@ -22,7 +22,7 @@ class AuthorController {
     ])
     @GetMapping("/authors")
     fun getAllAuthors(@RequestParam params: Map<String, String>) =
-        authorAccessService.getAllAuthors(AuthorSearchQuery(params))
+        authorAccessService.getAllAuthors(SearchAuthorQuery(params))
 
     @Operation(summary = "Get author specified by ID")
     @ApiResponses(value = [

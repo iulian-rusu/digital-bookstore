@@ -1,6 +1,6 @@
 package com.pos.booklibrary.persistence.query
 
-class AuthorSearchQuery(queryParams: Map<String, String>) : PagedSearchQuery(queryParams) {
+class SearchAuthorQuery(queryParams: Map<String, String>) : PagedSearchQuery(queryParams) {
     private val firstName: String
     private val lastName: String
 

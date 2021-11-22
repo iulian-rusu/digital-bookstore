@@ -5,6 +5,7 @@ import com.pos.orders.interfaces.OrderAccessInterface
 import com.pos.orders.interfaces.StockValidationInterface
 import com.pos.orders.models.Order
 import com.pos.orders.views.OrderModelAssembler
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.hateoas.CollectionModel
@@ -26,6 +27,8 @@ class OrderAccessService : OrderAccessInterface {
 
     @Autowired
     private lateinit var stockValidationInterface: StockValidationInterface
+    
+    private val logger = LoggerFactory.getLogger(OrderAccessService::class.java)
 
     override fun getAllOrders(clientId: Long): CollectionModel<EntityModel<Order>> =
         mongoTemplate.findAll(Order::class.java, collectionNameFor(clientId))
@@ -62,7 +65,7 @@ class OrderAccessService : OrderAccessInterface {
                 .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
                 .body(entityModel)
         } catch (e: Exception) {
-            println(e)
+            logger.error("postOrder(clientId=$clientId): $e")
             ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build()
         }
     }
@@ -77,7 +80,7 @@ class OrderAccessService : OrderAccessInterface {
             mongoTemplate.dropCollection(collectionNameFor(clientId))
             ResponseEntity.noContent().build()
         } catch (e: Exception) {
-            println(e)
+            logger.error("deleteAllOrders(clientId=$clientId): $e")
             ResponseEntity.notFound().build()
         }
     }
@@ -93,7 +96,7 @@ class OrderAccessService : OrderAccessInterface {
                     ResponseEntity.noContent().build()
                 } ?: ResponseEntity.notFound().build()
         } catch (e: Exception) {
-            println(e)
+            logger.error("deleteOrder(clientId=$clientId, orderId=$orderId): $e")
             ResponseEntity.notFound().build()
         }
     }

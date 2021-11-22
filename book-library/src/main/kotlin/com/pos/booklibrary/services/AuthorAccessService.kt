@@ -1,13 +1,14 @@
 package com.pos.booklibrary.services
 
 import com.pos.booklibrary.controllers.AuthorController
-import com.pos.booklibrary.persistence.query.AuthorSearchQuery
+import com.pos.booklibrary.persistence.query.SearchAuthorQuery
 import com.pos.booklibrary.interfaces.AuthorAccessInterface
 import com.pos.booklibrary.persistence.AuthorRepository
 import com.pos.booklibrary.models.Author
 import com.pos.booklibrary.persistence.GenericQueryRepository
 import com.pos.booklibrary.persistence.mappers.AuthorRowMapper
 import com.pos.booklibrary.views.AuthorModelAssembler
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.hateoas.CollectionModel
@@ -30,7 +31,9 @@ class AuthorAccessService : AuthorAccessInterface {
     @Autowired
     private lateinit var authorAssembler: AuthorModelAssembler
 
-    override fun getAllAuthors(query: AuthorSearchQuery): ResponseEntity<CollectionModel<EntityModel<Author>>> =
+    private val logger = LoggerFactory.getLogger(AuthorAccessService::class.java)
+
+    override fun getAllAuthors(query: SearchAuthorQuery): ResponseEntity<CollectionModel<EntityModel<Author>>> =
         try {
             customQueryRepository.find(query, AuthorRowMapper())
                 .map(authorAssembler::toModel)
@@ -43,7 +46,7 @@ class AuthorAccessService : AuthorAccessInterface {
                     )
                 }
         } catch (e: Exception) {
-            println(e)
+            logger.error("getAllAuthors(): $e")
             ResponseEntity.status(HttpStatus.BAD_REQUEST).build()
         }
 
@@ -58,7 +61,7 @@ class AuthorAccessService : AuthorAccessInterface {
                 .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
                 .body(entityModel)
         } catch (e: Exception) {
-            println(e)
+            logger.error("postAuthor(firstName=${newAuthor.getFirstName()}): $e")
             ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build()
         }
     }
@@ -86,7 +89,7 @@ class AuthorAccessService : AuthorAccessInterface {
                     .body(entityModel)
             }
         } catch (e: Exception) {
-            println(e)
+            logger.error("putAuthor(id=$id): $e")
             return ResponseEntity.status(HttpStatus.CONFLICT).build()
         }
     }
@@ -96,7 +99,7 @@ class AuthorAccessService : AuthorAccessInterface {
             authorRepository.deleteById(id)
             ResponseEntity.noContent().build()
         } catch (e: Exception) {
-            println(e)
+            logger.error("deleteAuthor(id=$id): $e")
             ResponseEntity.notFound().build()
         }
     }
