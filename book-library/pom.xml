@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.pos</groupId>
     <artifactId>book-library</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>book-library</name>
     <description>book-library</description>
     <properties>
@@ -19,6 +19,14 @@
     </properties>
 
     <dependencies>
+        <!-- add reference to identity-management web service -->
+        <dependency>
+            <groupId>com.pos</groupId>
+            <artifactId>identity</artifactId>
+            <version>1.0.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <!-- other external dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
