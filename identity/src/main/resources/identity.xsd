@@ -41,6 +41,7 @@
     <xs:element name="userUpdateRequest">
         <xs:complexType>
             <xs:sequence>
+                <xs:element name="token" type="xs:string"/>
                 <xs:element name="userId" type="xs:long"/>
                 <xs:element name="password" type="xs:string" minOccurs="0"/>
                 <xs:element name="role" type="xs:string" minOccurs="0"/>
@@ -59,6 +60,7 @@
     <xs:element name="userDeletionRequest">
         <xs:complexType>
             <xs:sequence>
+                <xs:element name="token" type="xs:string"/>
                 <xs:element name="userId" type="xs:long"/>
             </xs:sequence>
         </xs:complexType>

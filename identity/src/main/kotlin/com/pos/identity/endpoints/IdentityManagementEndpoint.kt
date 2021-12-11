@@ -4,7 +4,6 @@ import com.pos.identity.*
 import com.pos.identity.interfaces.JwtManagementInterface
 import com.pos.identity.interfaces.UserManagementInterface
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.ws.server.endpoint.annotation.Endpoint
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot
 import org.springframework.ws.server.endpoint.annotation.RequestPayload
@@ -32,17 +31,11 @@ class IdentityManagementEndpoint {
 
     @PayloadRoot(namespace = NAMESPACE_URL, localPart = "userUpdateRequest")
     @ResponsePayload
-    fun update(
-        @RequestPayload request: UserUpdateRequest,
-        @RequestHeader("Authorization") authHeader: String?
-    ) = userManagementService.update(request, authHeader ?: "")
+    fun update(@RequestPayload request: UserUpdateRequest, ) = userManagementService.update(request)
 
     @PayloadRoot(namespace = NAMESPACE_URL, localPart = "userDeletionRequest")
     @ResponsePayload
-    fun delete(
-        @RequestPayload request: UserDeletionRequest,
-        @RequestHeader("Authorization") authHeader: String?
-    ) = userManagementService.delete(request, authHeader ?: "")
+    fun delete(@RequestPayload request: UserDeletionRequest, ) = userManagementService.delete(request)
 
     @PayloadRoot(namespace = NAMESPACE_URL, localPart = "tokenValidationRequest")
     fun validate(@RequestPayload request: TokenValidationRequest) = jwtManagementService.validate(request)

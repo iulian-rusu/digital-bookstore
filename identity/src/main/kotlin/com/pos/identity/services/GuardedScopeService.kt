@@ -3,8 +3,8 @@ package com.pos.identity.services
 import com.pos.identity.endpoints.ResponseStatus
 import org.slf4j.LoggerFactory
 
-abstract class GuardedScopeService {
-    protected val logger = LoggerFactory.getLogger(GuardedScopeService::class.java)
+abstract class GuardedScopeService(guardedClass: Class<*>) {
+    protected val logger = LoggerFactory.getLogger(guardedClass)
 
     protected fun <Response> guardedScope(
         action: () -> Response,

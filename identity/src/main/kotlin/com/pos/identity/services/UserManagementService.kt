@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service
 import javax.management.relation.InvalidRoleValueException
 
 @Service
-class UserManagementService : GuardedScopeService(), UserManagementInterface {
+class UserManagementService : GuardedScopeService(UserManagementService::class.java), UserManagementInterface {
     @Autowired
     private lateinit var userRepository: UserRepository
 
@@ -65,16 +65,11 @@ class UserManagementService : GuardedScopeService(), UserManagementInterface {
         )
     }
 
-    override fun update(request: UserUpdateRequest, authHeader: String): UserUpdateResponse {
+    override fun update(request: UserUpdateRequest): UserUpdateResponse {
         val response = UserUpdateResponse()
         return guardedScope(
             action = {
-                val details = jwtProvider.getToken(authHeader)?.let { jwtProvider.getUserDetails(it) }
-
-                if (details == null) {
-                    response.status = ResponseStatus.UNAUTHORIZED
-                    return@guardedScope response
-                }
+                val details = jwtProvider.getUserDetails(request.token)
 
                 if (request.password != null && request.userId != details.userId) {
                     response.status = ResponseStatus.FORBIDDEN
@@ -92,7 +87,7 @@ class UserManagementService : GuardedScopeService(), UserManagementInterface {
 
                 val query = UpdateUserQuery(
                     userId = request.userId,
-                    passwordHash = request.password,
+                    passwordHash = request.password?.let { Encoder.hashString(it) },
                     role = request.role
                 )
                 genericQeryRepository.execute(query)
@@ -108,16 +103,11 @@ class UserManagementService : GuardedScopeService(), UserManagementInterface {
         )
     }
 
-    override fun delete(request: UserDeletionRequest, authHeader: String): UserDeletionResponse {
+    override fun delete(request: UserDeletionRequest): UserDeletionResponse {
         val response = UserDeletionResponse()
         return guardedScope(
             action = {
-                val details = jwtProvider.getToken(authHeader)?.let { jwtProvider.getUserDetails(it) }
-
-                if (details == null) {
-                    response.status = ResponseStatus.UNAUTHORIZED
-                    return@guardedScope response
-                }
+                val details = jwtProvider.getUserDetails(request.token)
 
                 if (details.userId != request.userId) {
                     response.status = ResponseStatus.FORBIDDEN

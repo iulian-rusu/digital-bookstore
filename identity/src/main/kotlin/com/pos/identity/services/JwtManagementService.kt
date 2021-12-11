@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
-class JwtManagementService : GuardedScopeService(), JwtManagementInterface {
+class JwtManagementService : GuardedScopeService(JwtManagementService::class.java), JwtManagementInterface {
     @Autowired
     private lateinit var jwtProvider: JwtProvider
 

@@ -21,7 +21,7 @@ class UpdateUserQuery(
             updateConditions.add("role = :role")
         if (updateConditions.isNotEmpty()) {
             sqlBuilder.append(updateConditions.joinToString(", "))
-            sqlBuilder.append(" WHERE user_id = :userId; ")
+            sqlBuilder.append(" WHERE user_id = :userId")
         }
         return sqlBuilder.toString()
     }
