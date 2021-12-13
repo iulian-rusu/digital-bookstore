@@ -4,6 +4,7 @@ import com.pos.identity.endpoints.IdentityManagementEndpoint
 import com.pos.identity.models.User
 import com.pos.identity.persistence.UserRepository
 import com.pos.identity.security.SimpleUserDetails
+import com.pos.identity.security.exceptions.JwtAuthenticationException
 import io.jsonwebtoken.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken

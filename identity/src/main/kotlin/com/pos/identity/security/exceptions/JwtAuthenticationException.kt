@@ -1,4 +1,4 @@
-package com.pos.identity.security.jwt
+package com.pos.identity.security.exceptions
 
 import org.springframework.security.core.AuthenticationException
 
