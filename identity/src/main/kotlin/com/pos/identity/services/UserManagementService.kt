@@ -52,7 +52,7 @@ class UserManagementService : GuardedSoapScope(UserManagementService::class.java
     override fun update(request: UserUpdateRequest): UserUpdateResponse {
         val response = UserUpdateResponse()
         guardedScope {
-            val details = jwtProvider.getUserDetails(request.token)
+            val details = jwtProvider.getUser(request.token)
 
             if (request.password != null && request.userId != details.userId)
                 throw AuthorizationException("update user password")
@@ -78,7 +78,7 @@ class UserManagementService : GuardedSoapScope(UserManagementService::class.java
     override fun delete(request: UserDeletionRequest): UserDeletionResponse {
         val response = UserDeletionResponse()
         guardedScope {
-            val details = jwtProvider.getUserDetails(request.token)
+            val details = jwtProvider.getUser(request.token)
 
             if (details.userId != request.userId)
                 throw AuthorizationException("delete user")

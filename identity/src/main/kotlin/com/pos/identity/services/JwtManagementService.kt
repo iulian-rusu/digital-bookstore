@@ -17,7 +17,7 @@ class JwtManagementService : GuardedSoapScope(JwtManagementService::class.java),
     override fun validate(request: TokenValidationRequest): TokenValidationResponse {
         val response = TokenValidationResponse()
         guardedScope {
-            jwtProvider.getUserDetails(request.token).let { details ->
+            jwtProvider.getUser(request.token).let { details ->
                 response.apply {
                     sub = details.userId
                     role = details.role
@@ -30,7 +30,7 @@ class JwtManagementService : GuardedSoapScope(JwtManagementService::class.java),
     override fun destroy(request: TokenDestructionRequest): TokenDestructionResponse {
         val response = TokenDestructionResponse()
         guardedScope {
-            jwtProvider.destroyToken(request.token)
+            JwtProvider.destroyToken(request.token)
             response.token = request.token
         }
         return response

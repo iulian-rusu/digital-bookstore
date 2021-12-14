@@ -3,13 +3,9 @@ package com.pos.identity.security.jwt
 import com.pos.identity.endpoints.IdentityManagementEndpoint
 import com.pos.identity.models.User
 import com.pos.identity.persistence.UserRepository
-import com.pos.identity.security.SimpleUserDetails
 import com.pos.identity.security.exceptions.JwtAuthenticationException
 import io.jsonwebtoken.*
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.Authentication
-import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.stereotype.Component
 import java.util.*
 import javax.servlet.http.HttpServletRequest
@@ -17,7 +13,22 @@ import javax.servlet.http.HttpServletRequest
 @Component
 class JwtProvider {
     companion object {
-        val blacklist: MutableList<String> = mutableListOf()
+        private val blacklist: MutableList<String> = mutableListOf()
+
+        fun getToken(authHeader: String?): String? {
+            return if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                authHeader.split(" ")[1]
+            } else null
+        }
+
+        fun getToken(req: HttpServletRequest): String? {
+            val authHeader = req.getHeader("Authorization")
+            return getToken(authHeader)
+        }
+
+        fun destroyToken(token: String) {
+            blacklist.add(token)
+        }
     }
 
     @Autowired
@@ -26,8 +37,6 @@ class JwtProvider {
     @Autowired
     private lateinit var userRepository: UserRepository
 
-    @Autowired
-    private lateinit var userDetailsService: UserDetailsService
 
     fun createToken(user: User): String {
         val claims = Jwts.claims()
@@ -43,29 +52,10 @@ class JwtProvider {
             .compact()
     }
 
-    fun getUserDetails(token: String): SimpleUserDetails {
-        val user = userRepository.findOne(getUserId(token))
-        return userDetailsService.loadUserByUsername(user.username) as SimpleUserDetails
-    }
-
-    fun getAuthentication(token: String): Authentication {
-        val userDetails = getUserDetails(token)
-        return UsernamePasswordAuthenticationToken(userDetails, "", userDetails.authorities)
-    }
+    fun getUser(token: String) = userRepository.findOne(getUserId(token))
 
     fun getUserId(token: String) =
         Jwts.parser().setSigningKey(jwtProperties.secretKey).parseClaimsJws(token).body["sub"].toString().toLong()
-
-    fun getToken(authHeader: String?): String? {
-        return if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            authHeader.split(" ")[1]
-        } else null
-    }
-
-    fun getToken(req: HttpServletRequest): String? {
-        val authHeader = req.getHeader("Authorization")
-        return getToken(authHeader)
-    }
 
     fun validateToken(token: String): Boolean {
         if (blacklist.contains(token))
@@ -77,9 +67,5 @@ class JwtProvider {
             blacklist.add(token)
             throw JwtAuthenticationException(e.message ?: "JWT validation exception")
         }
-    }
-
-    fun destroyToken(token: String) {
-        blacklist.add(token)
     }
 }

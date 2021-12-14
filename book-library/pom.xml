@@ -24,7 +24,6 @@
             <groupId>com.pos</groupId>
             <artifactId>identity</artifactId>
             <version>1.0.0</version>
-            <scope>compile</scope>
         </dependency>
         <!-- other external dependencies -->
         <dependency>

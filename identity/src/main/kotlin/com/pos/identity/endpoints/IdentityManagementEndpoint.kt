@@ -38,8 +38,10 @@ class IdentityManagementEndpoint {
     fun delete(@RequestPayload request: UserDeletionRequest, ) = userManagementService.delete(request)
 
     @PayloadRoot(namespace = NAMESPACE_URL, localPart = "tokenValidationRequest")
+    @ResponsePayload
     fun validate(@RequestPayload request: TokenValidationRequest) = jwtManagementService.validate(request)
 
     @PayloadRoot(namespace = NAMESPACE_URL, localPart = "tokenDestructionRequest")
+    @ResponsePayload
     fun destroy(@RequestPayload request: TokenDestructionRequest) = jwtManagementService.destroy(request)
 }

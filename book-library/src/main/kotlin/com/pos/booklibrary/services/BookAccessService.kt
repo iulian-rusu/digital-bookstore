@@ -11,6 +11,8 @@ import com.pos.booklibrary.persistence.mappers.BookRowMapper
 import com.pos.booklibrary.persistence.query.UpdateOrderQuery
 import com.pos.booklibrary.views.BookAuthorModelAssembler
 import com.pos.booklibrary.views.BookModelAssembler
+import com.pos.identity.security.UserRole
+import com.pos.identity.shared.IdentityAuthorized
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull
@@ -22,10 +24,9 @@ import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
-import org.springframework.web.bind.MissingRequestValueException
 
 @Service
-class BookAccessService : BookAccessInterface {
+class BookAccessService : IdentityAuthorized(), BookAccessInterface {
     @Autowired
     private lateinit var bookRepository: BookRepository
 
@@ -77,37 +78,41 @@ class BookAccessService : BookAccessInterface {
         }
     }
 
-    override fun postBook(newBook: Book): ResponseEntity<EntityModel<BasicBook>> {
+    override fun postBook(newBook: Book, token: String?): ResponseEntity<EntityModel<BasicBook>> {
+        if (hasMissingFields(newBook))
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build()
+
         return try {
-            if (hasMissingFields(newBook)) {
-                throw MissingRequestValueException("Missing required fields")
+            ifAuthorized(token, UserRole.MANAGER) {
+                val entityModel = bookAssembler.toModel(bookRepository.save(newBook))
+                ResponseEntity
+                    .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
+                    .body(entityModel)
             }
-            val entityModel = bookAssembler.toModel(bookRepository.save(newBook))
-            ResponseEntity
-                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
-                .body(entityModel)
         } catch (e: Exception) {
             logger.error("postBook(isbn=${newBook.getIsbn()}): $e")
             ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build()
         }
     }
 
-    override fun putBook(isbn: String, newBook: Book): ResponseEntity<EntityModel<BasicBook>> {
+    override fun putBook(isbn: String, newBook: Book, token: String?): ResponseEntity<EntityModel<BasicBook>> {
         newBook.setIsbn(isbn)
-        if (hasMissingFields(newBook)) {
+        if (hasMissingFields(newBook))
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build()
-        }
+
         return try {
-            bookRepository.findByIdOrNull(isbn)?.let {
-                // Update existing Book
-                bookRepository.save(newBook)
-                ResponseEntity.noContent().build()
-            } ?: run {
-                // Create a new Book
-                val entityModel = bookAssembler.toModel(bookRepository.save(newBook))
-                ResponseEntity
-                    .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
-                    .body(entityModel)
+            ifAuthorized(token, UserRole.MANAGER) {
+                bookRepository.findByIdOrNull(isbn)?.let {
+                    // Update existing Book
+                    bookRepository.save(newBook)
+                    ResponseEntity.noContent().build()
+                } ?: run {
+                    // Create a new Book
+                    val entityModel = bookAssembler.toModel(bookRepository.save(newBook))
+                    ResponseEntity
+                        .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
+                        .body(entityModel)
+                }
             }
         } catch (e: Exception) {
             logger.error("putBook(isbn=$isbn): $e")
@@ -115,10 +120,12 @@ class BookAccessService : BookAccessInterface {
         }
     }
 
-    override fun deleteBook(isbn: String): ResponseEntity<Unit> {
+    override fun deleteBook(isbn: String, token: String?): ResponseEntity<Unit> {
         return try {
-            bookRepository.deleteById(isbn)
-            ResponseEntity.noContent().build()
+            ifAuthorized(token, UserRole.MANAGER) {
+                bookRepository.deleteById(isbn)
+                ResponseEntity.noContent().build()
+            }
         } catch (e: Exception) {
             logger.error("deleteBook(isbn=$isbn): $e")
             ResponseEntity.notFound().build()
@@ -148,35 +155,42 @@ class BookAccessService : BookAccessInterface {
 
     override fun postBookAuthors(
         isbn: String,
-        bookAuthorIds: List<Long>
+        bookAuthorIds: List<Long>,
+        token: String?
     ): ResponseEntity<CollectionModel<EntityModel<BookAuthor>>> {
         return try {
-            bookAuthorIds.mapIndexed { index, bookAuthorId ->
-                BookAuthor(isbn, index.toLong(), bookAuthorId)
-            }.also { newAuthors ->
-                bookAuthorRepository.saveAll(newAuthors)
+            ifAuthorized(token, UserRole.MANAGER) {
+                bookAuthorIds.mapIndexed { index, bookAuthorId ->
+                    BookAuthor(isbn, index.toLong(), bookAuthorId)
+                }.also { newAuthors ->
+                    bookAuthorRepository.saveAll(newAuthors)
+                }
+                ResponseEntity.accepted().body(getBookAuthors(isbn))
             }
-            ResponseEntity.accepted().body(getBookAuthors(isbn))
         } catch (e: Exception) {
             logger.error("postBookAuthors(isbn=$isbn): $e")
             ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build()
         }
     }
 
-    override fun deleteBookAuthor(isbn: String, index: Long): ResponseEntity<Unit> {
+    override fun deleteBookAuthor(isbn: String, index: Long, token: String?): ResponseEntity<Unit> {
         return try {
-            bookAuthorRepository.deleteBookAuthorByIndex(isbn, index)
-            ResponseEntity.noContent().build()
+            ifAuthorized(token, UserRole.MANAGER) {
+                bookAuthorRepository.deleteBookAuthorByIndex(isbn, index)
+                ResponseEntity.noContent().build()
+            }
         } catch (e: Exception) {
             logger.error("deleteBookAuthor(isbn=$isbn, index=$index): $e")
             ResponseEntity.notFound().build()
         }
     }
 
-    override fun deleteBookAuthors(isbn: String): ResponseEntity<Unit> {
+    override fun deleteBookAuthors(isbn: String, token: String?): ResponseEntity<Unit> {
         return try {
-            bookAuthorRepository.deleteBookAuthors(isbn)
-            ResponseEntity.noContent().build()
+            ifAuthorized(token, UserRole.MANAGER) {
+                bookAuthorRepository.deleteBookAuthors(isbn)
+                ResponseEntity.noContent().build()
+            }
         } catch (e: Exception) {
             logger.error("deleteBookAuthors(isbn=$isbn): $e")
             ResponseEntity.notFound().build()
