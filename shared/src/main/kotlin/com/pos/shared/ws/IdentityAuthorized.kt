@@ -1,4 +1,4 @@
-package com.pos.identity.shared
+package com.pos.shared.ws
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 
 @Component
-class IdentityAuthorized {
+abstract class IdentityAuthorized {
     @Autowired
     private lateinit var identityClient: IdentityClient
 

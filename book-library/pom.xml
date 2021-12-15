@@ -22,7 +22,7 @@
         <!-- add reference to identity-management web service -->
         <dependency>
             <groupId>com.pos</groupId>
-            <artifactId>identity</artifactId>
+            <artifactId>shared</artifactId>
             <version>1.0.0</version>
         </dependency>
         <!-- other external dependencies -->
@@ -74,6 +74,16 @@
             <artifactId>kotlin-test</artifactId>
             <version>${kotlin.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-oxm</artifactId>
+            <version>5.3.13</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.ws</groupId>
+            <artifactId>spring-ws-core</artifactId>
+            <version>3.1.1</version>
         </dependency>
     </dependencies>
 

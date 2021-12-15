@@ -11,8 +11,8 @@ import com.pos.booklibrary.persistence.mappers.BookRowMapper
 import com.pos.booklibrary.persistence.query.UpdateOrderQuery
 import com.pos.booklibrary.views.BookAuthorModelAssembler
 import com.pos.booklibrary.views.BookModelAssembler
-import com.pos.identity.security.UserRole
-import com.pos.identity.shared.IdentityAuthorized
+import com.pos.shared.security.UserRole
+import com.pos.shared.ws.IdentityAuthorized
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull

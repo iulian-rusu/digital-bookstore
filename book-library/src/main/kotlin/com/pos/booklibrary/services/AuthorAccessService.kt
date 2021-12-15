@@ -8,6 +8,8 @@ import com.pos.booklibrary.models.Author
 import com.pos.booklibrary.persistence.GenericQueryRepository
 import com.pos.booklibrary.persistence.mappers.AuthorRowMapper
 import com.pos.booklibrary.views.AuthorModelAssembler
+import com.pos.shared.security.UserRole
+import com.pos.shared.ws.IdentityAuthorized
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull
@@ -21,7 +23,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 
 @Service
-class AuthorAccessService : AuthorAccessInterface {
+class AuthorAccessService : IdentityAuthorized(), AuthorAccessInterface {
     @Autowired
     private lateinit var authorRepository: AuthorRepository
 
@@ -54,39 +56,43 @@ class AuthorAccessService : AuthorAccessInterface {
         ?.let { ResponseEntity.ok(authorAssembler.toModel(it)) }
         ?: ResponseEntity.notFound().build()
 
-    override fun postAuthor(newAuthor: Author): ResponseEntity<EntityModel<Author>> {
+    override fun postAuthor(newAuthor: Author, token: String?): ResponseEntity<EntityModel<Author>> {
         return try {
-            val entityModel = authorAssembler.toModel(authorRepository.save(newAuthor))
-            ResponseEntity
-                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
-                .body(entityModel)
+            ifAuthorized(token, UserRole.MANAGER) {
+                val entityModel = authorAssembler.toModel(authorRepository.save(newAuthor))
+                ResponseEntity
+                    .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
+                    .body(entityModel)
+            }
         } catch (e: Exception) {
             logger.error("postAuthor(firstName=${newAuthor.getFirstName()}): $e")
             ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build()
         }
     }
 
-    override fun putAuthor(id: Long, newAuthor: Author): ResponseEntity<EntityModel<Author>> {
+    override fun putAuthor(id: Long, newAuthor: Author, token: String?): ResponseEntity<EntityModel<Author>> {
         newAuthor.setId(id)
         if (hasMissingFields(newAuthor)) {
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build()
         }
         return try {
-            authorRepository.findByIdOrNull(id)?.let {
-                // Update existing Author
-                newAuthor.run {
-                    authorRepository.saveWithId(id, getFirstName(), getLastName())
+            ifAuthorized(token, UserRole.MANAGER) {
+                authorRepository.findByIdOrNull(id)?.let {
+                    // Update existing Author
+                    newAuthor.run {
+                        authorRepository.saveWithId(id, getFirstName(), getLastName())
+                    }
+                    ResponseEntity.noContent().build()
+                } ?: run {
+                    // Create a new Author
+                    val entityModel = authorAssembler.toModel(newAuthor.run {
+                        authorRepository.saveWithId(id, getFirstName(), getLastName())
+                        this
+                    })
+                    ResponseEntity
+                        .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
+                        .body(entityModel)
                 }
-                ResponseEntity.noContent().build()
-            } ?: run {
-                // Create a new Author
-                val entityModel = authorAssembler.toModel(newAuthor.run {
-                    authorRepository.saveWithId(id, getFirstName(), getLastName())
-                    this
-                })
-                ResponseEntity
-                    .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
-                    .body(entityModel)
             }
         } catch (e: Exception) {
             logger.error("putAuthor(id=$id): $e")
@@ -94,10 +100,12 @@ class AuthorAccessService : AuthorAccessInterface {
         }
     }
 
-    override fun deleteAuthor(id: Long): ResponseEntity<Unit> {
+    override fun deleteAuthor(id: Long, token: String?): ResponseEntity<Unit> {
         return try {
-            authorRepository.deleteById(id)
-            ResponseEntity.noContent().build()
+            ifAuthorized(token, UserRole.MANAGER) {
+                authorRepository.deleteById(id)
+                ResponseEntity.noContent().build()
+            }
         } catch (e: Exception) {
             logger.error("deleteAuthor(id=$id): $e")
             ResponseEntity.notFound().build()

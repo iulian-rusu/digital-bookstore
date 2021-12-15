@@ -1,13 +1,12 @@
 package com.pos.booklibrary.config
 
-import com.pos.identity.shared.IdentityClient
+import com.pos.shared.ws.IdentityClient
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.oxm.jaxb.Jaxb2Marshaller
 
 @Configuration
 class IdentityClientConfig {
-    // TODO remove redundant configs?
     companion object {
         val IDENTITY_HOST = System.getenv("IDENTITY_HOST") ?: "localhost"
         val IDENTITY_PORT = System.getenv("IDENTITY_PORT") ?: "8082"
@@ -15,7 +14,7 @@ class IdentityClientConfig {
 
     @Bean
     fun marshaller() = Jaxb2Marshaller().apply {
-        contextPath = "com.pos.identity"
+        contextPath = "com.pos.shared"
     }
 
     @Bean

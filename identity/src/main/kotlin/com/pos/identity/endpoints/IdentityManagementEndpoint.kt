@@ -31,11 +31,11 @@ class IdentityManagementEndpoint {
 
     @PayloadRoot(namespace = NAMESPACE_URL, localPart = "userUpdateRequest")
     @ResponsePayload
-    fun update(@RequestPayload request: UserUpdateRequest, ) = userManagementService.update(request)
+    fun update(@RequestPayload request: UserUpdateRequest) = userManagementService.update(request)
 
     @PayloadRoot(namespace = NAMESPACE_URL, localPart = "userDeletionRequest")
     @ResponsePayload
-    fun delete(@RequestPayload request: UserDeletionRequest, ) = userManagementService.delete(request)
+    fun delete(@RequestPayload request: UserDeletionRequest) = userManagementService.delete(request)
 
     @PayloadRoot(namespace = NAMESPACE_URL, localPart = "tokenValidationRequest")
     @ResponsePayload

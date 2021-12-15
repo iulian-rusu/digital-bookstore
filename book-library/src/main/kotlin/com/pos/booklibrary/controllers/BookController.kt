@@ -6,7 +6,7 @@ import com.pos.booklibrary.models.Book
 import com.pos.booklibrary.models.BookOrder
 import com.pos.booklibrary.persistence.query.UpdateOrderQuery
 import com.pos.booklibrary.services.BookAccessService
-import com.pos.identity.security.jwt.JwtProvider
+import com.pos.shared.security.jwt.JWT
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
@@ -66,7 +66,7 @@ class BookController {
     fun postBook(
         @RequestBody newBook: Book,
         @RequestHeader("Authorization") authHeader: String?
-    ) = bookAccessService.postBook(newBook, JwtProvider.getToken(authHeader))
+    ) = bookAccessService.postBook(newBook, JWT.getToken(authHeader))
 
     @Operation(summary = "Update or create a single book")
     @ApiResponses(
@@ -82,7 +82,7 @@ class BookController {
         @PathVariable isbn: String,
         @RequestBody newBook: Book,
         @RequestHeader("Authorization") authHeader: String?
-    ) = bookAccessService.putBook(isbn, newBook, JwtProvider.getToken(authHeader))
+    ) = bookAccessService.putBook(isbn, newBook, JWT.getToken(authHeader))
 
     @Operation(summary = "Delete a single book")
     @ApiResponses(
@@ -93,7 +93,7 @@ class BookController {
     )
     @DeleteMapping("/books/{isbn}")
     fun deleteBook(@PathVariable isbn: String, @RequestHeader("Authorization") authHeader: String?) =
-        bookAccessService.deleteBook(isbn, JwtProvider.getToken(authHeader))
+        bookAccessService.deleteBook(isbn, JWT.getToken(authHeader))
 
     @Operation(summary = "Get the book's author list")
     @ApiResponses(
@@ -130,7 +130,7 @@ class BookController {
         @PathVariable isbn: String,
         @RequestBody bookAuthorIds: List<Long>,
         @RequestHeader("Authorization") authHeader: String?
-    ) = bookAccessService.postBookAuthors(isbn, bookAuthorIds, JwtProvider.getToken(authHeader))
+    ) = bookAccessService.postBookAuthors(isbn, bookAuthorIds, JWT.getToken(authHeader))
 
     @Operation(summary = "Delete author at specified index from a book")
     @ApiResponses(
@@ -144,7 +144,7 @@ class BookController {
         @PathVariable isbn: String,
         @PathVariable index: Long,
         @RequestHeader("Authorization") authHeader: String?
-    ) = bookAccessService.deleteBookAuthor(isbn, index, JwtProvider.getToken(authHeader))
+    ) = bookAccessService.deleteBookAuthor(isbn, index, JWT.getToken(authHeader))
 
     @Operation(summary = "Delete all authors from a book, if any exist")
     @ApiResponses(
@@ -155,5 +155,5 @@ class BookController {
     )
     @DeleteMapping("/books/{isbn}/authors")
     fun deleteBookAuthors(@PathVariable isbn: String, @RequestHeader("Authorization") authHeader: String?) =
-        bookAccessService.deleteBookAuthors(isbn, JwtProvider.getToken(authHeader))
+        bookAccessService.deleteBookAuthors(isbn, JWT.getToken(authHeader))
 }

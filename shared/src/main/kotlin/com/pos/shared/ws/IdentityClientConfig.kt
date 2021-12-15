@@ -1,4 +1,4 @@
-package com.pos.identity.shared
+package com.pos.shared.ws
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -13,7 +13,7 @@ class IdentityClientConfig {
 
     @Bean
     fun marshaller() = Jaxb2Marshaller().apply {
-        contextPath = "com.pos.identity"
+        contextPath = "com.pos.shared"
     }
 
     @Bean
