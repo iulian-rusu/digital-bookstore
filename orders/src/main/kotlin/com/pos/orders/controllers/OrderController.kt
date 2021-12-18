@@ -1,6 +1,5 @@
 package com.pos.orders.controllers
 
-import com.pos.orders.models.Order
 import com.pos.orders.models.PostOrderRequest
 import com.pos.orders.services.OrderAccessService
 import com.pos.shared.security.jwt.JWT

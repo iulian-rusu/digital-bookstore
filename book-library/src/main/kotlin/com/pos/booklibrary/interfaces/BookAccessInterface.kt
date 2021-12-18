@@ -4,7 +4,6 @@ import com.pos.booklibrary.models.BasicBook
 import com.pos.booklibrary.persistence.query.SearchBookQuery
 import com.pos.booklibrary.models.Book
 import com.pos.booklibrary.models.BookAuthor
-import com.pos.booklibrary.models.BookOrderInfo
 import org.springframework.hateoas.CollectionModel
 import org.springframework.hateoas.EntityModel
 import org.springframework.http.ResponseEntity
