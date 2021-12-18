@@ -8,7 +8,6 @@ import com.pos.booklibrary.persistence.BookAuthorRepository
 import com.pos.booklibrary.persistence.BookRepository
 import com.pos.booklibrary.persistence.GenericQueryRepository
 import com.pos.booklibrary.persistence.mappers.BookRowMapper
-import com.pos.booklibrary.persistence.query.UpdateOrderQuery
 import com.pos.booklibrary.views.BookAuthorModelAssembler
 import com.pos.booklibrary.views.BookModelAssembler
 import com.pos.shared.security.UserRole
@@ -67,16 +66,6 @@ class BookAccessService : IdentityAuthorized(), BookAccessInterface {
                 val model = if (verbose) it else BriefBook(it)
                 ResponseEntity.ok(bookAssembler.toModel(model))
             } ?: ResponseEntity.notFound().build()
-
-    override fun postOrder(query: UpdateOrderQuery): ResponseEntity<Unit> {
-        return try {
-            customQueryRepository.execute(query)
-            ResponseEntity.accepted().build()
-        } catch (e: Exception) {
-            logger.error("postOrder(): $e")
-            ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build()
-        }
-    }
 
     override fun postBook(newBook: Book, token: String?): ResponseEntity<EntityModel<BasicBook>> {
         if (hasMissingFields(newBook))

@@ -12,12 +12,12 @@ import org.springframework.stereotype.Component
 class OrderModelAssembler: RepresentationModelAssembler<Order, EntityModel<Order>> {
     override fun toModel(order: Order) = EntityModel.of(
         order,
-        linkTo(methodOn(OrderController::class.java).getAllOrders(1 )).withSelfRel()
+        linkTo(methodOn(OrderController::class.java).getAllOrders(1 , null)).withSelfRel()
     )
 
     fun toModelWithClientId(order: Order, clientId: Long) = EntityModel.of(
         order,
-        linkTo(methodOn(OrderController::class.java).getOrder(clientId, order.getOrderId() ?: "")).withSelfRel(),
-        linkTo(methodOn(OrderController::class.java).getAllOrders(clientId)).withRel("clientOrders")
+        linkTo(methodOn(OrderController::class.java).getOrder(clientId, order.getOrderId() ?: "", null)).withSelfRel(),
+        linkTo(methodOn(OrderController::class.java).getAllOrders(clientId, null)).withRel("clientOrders")
     )
 }

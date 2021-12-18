@@ -1,7 +1,9 @@
 package com.pos.orders.controllers
 
 import com.pos.orders.models.Order
+import com.pos.orders.models.PostOrderRequest
 import com.pos.orders.services.OrderAccessService
+import com.pos.shared.security.jwt.JWT
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
@@ -18,17 +20,23 @@ class OrderController {
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "Orders retrieved")
     ])
-    @GetMapping("/{clientId}")
-    fun getAllOrders(@PathVariable(required = true) clientId: Long) = orderAccessService.getAllOrders(clientId)
+    @GetMapping("/client/{clientId}")
+    fun getAllOrders(
+        @PathVariable clientId: Long,
+        @RequestHeader("Authorization") authHeader: String?
+    ) = orderAccessService.getAllOrders(clientId, JWT.getToken(authHeader))
 
     @Operation(summary = "Get a specific order")
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "Order retrieved"),
         ApiResponse(responseCode = "404", description = "Order not found")
     ])
-    @GetMapping("/{clientId}/{orderId}")
-    fun getOrder(@PathVariable(required = true) clientId: Long, @PathVariable(required = true) orderId: String) =
-        orderAccessService.getOrder(clientId, orderId)
+    @GetMapping("/client/{clientId}/order/{orderId}")
+    fun getOrder(
+        @PathVariable clientId: Long,
+        @PathVariable orderId: String,
+        @RequestHeader("Authorization") authHeader: String?
+    ) = orderAccessService.getOrder(clientId, orderId, JWT.getToken(authHeader))
 
     @Operation(summary = "Create an order for a client")
     @ApiResponses(
@@ -38,24 +46,29 @@ class OrderController {
             ApiResponse(responseCode = "406", description = "Error creating order")
         ]
     )
-    @PostMapping("/{clientId}")
-    fun postOrder(@PathVariable(required = true) clientId: Long, @RequestBody order: Order) =
-        orderAccessService.postOrder(clientId, order)
+    @PostMapping("/client/{clientId}")
+    fun postOrder(
+        @PathVariable clientId: Long,
+        @RequestBody request: PostOrderRequest,
+        @RequestHeader("Authorization") authHeader: String?
+    ) = orderAccessService.postOrder(clientId, request, JWT.getToken(authHeader))
 
     @Operation(summary = "Create or update an order for a client")
     @ApiResponses(
         value = [
             ApiResponse(responseCode = "201", description = "Order created/updated"),
-            ApiResponse(responseCode = "409", description = "Missing or invalid order data"),
-            ApiResponse(responseCode = "406", description = "Error creating/updating order")
+            ApiResponse(responseCode = "404", description = "Cannot find ordered item"),
+            ApiResponse(responseCode = "406", description = "Missing or incorrect order data"),
+            ApiResponse(responseCode = "409", description = "Cannot validate order data")
         ]
     )
-    @PutMapping("/{clientId}/{orderId}")
+    @PutMapping("/client/{clientId}/order/{orderId}")
     fun putOrder(
-        @PathVariable(required = true) clientId: Long,
-        @PathVariable(required = true) orderId: String,
-        @RequestBody order: Order
-    ) = orderAccessService.putOrder(clientId, orderId, order)
+        @PathVariable clientId: Long,
+        @PathVariable orderId: String,
+        @RequestBody request: PostOrderRequest,
+        @RequestHeader("Authorization") authHeader: String?
+    ) = orderAccessService.putOrder(clientId, orderId, request, JWT.getToken(authHeader))
 
     @Operation(summary = "Delete all orders for a client")
     @ApiResponses(
@@ -64,8 +77,9 @@ class OrderController {
             ApiResponse(responseCode = "404", description = "Client not found")
         ]
     )
-    @DeleteMapping("/{clientId}")
-    fun deleteAllOrders(@PathVariable(required = true) clientId: Long) = orderAccessService.deleteAllOrders(clientId)
+    @DeleteMapping("/client/{clientId}")
+    fun deleteAllOrders(@PathVariable clientId: Long, @RequestHeader("Authorization") authHeader: String?) =
+        orderAccessService.deleteAllOrders(clientId, JWT.getToken(authHeader))
 
     @Operation(summary = "Delete a specific order for a client")
     @ApiResponses(
@@ -74,7 +88,10 @@ class OrderController {
             ApiResponse(responseCode = "404", description = "Client/order not found")
         ]
     )
-    @DeleteMapping("/{clientId}/{orderId}")
-    fun deleteOrder(@PathVariable(required = true) clientId: Long, @PathVariable(required = true) orderId: String) =
-        orderAccessService.deleteOrder(clientId, orderId)
+    @DeleteMapping("/client/{clientId}/order/{orderId}")
+    fun deleteOrder(
+        @PathVariable clientId: Long,
+        @PathVariable orderId: String,
+        @RequestHeader("Authorization") authHeader: String?
+    ) = orderAccessService.deleteOrder(clientId, orderId, JWT.getToken(authHeader))
 }

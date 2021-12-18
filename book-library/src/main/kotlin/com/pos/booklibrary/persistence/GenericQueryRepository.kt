@@ -19,6 +19,5 @@ class GenericQueryRepository {
     fun <T, Mapper> find(query: ParametrizedQuery, mapper: Mapper): List<T>
             where Mapper : RowMapper<T> = jdbcTemplate.query(query.getSql(), query.params, mapper)
 
-    fun execute(query: ParametrizedQuery) =
-        jdbcTemplate.update(query.getSql(), query.params)
+    fun execute(query: ParametrizedQuery) = jdbcTemplate.update(query.getSql(), query.params)
 }

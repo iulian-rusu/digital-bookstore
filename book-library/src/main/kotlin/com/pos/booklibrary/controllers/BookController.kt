@@ -3,8 +3,6 @@ package com.pos.booklibrary.controllers
 import com.pos.booklibrary.models.BasicBook
 import com.pos.booklibrary.persistence.query.SearchBookQuery
 import com.pos.booklibrary.models.Book
-import com.pos.booklibrary.models.BookOrder
-import com.pos.booklibrary.persistence.query.UpdateOrderQuery
 import com.pos.booklibrary.services.BookAccessService
 import com.pos.shared.security.jwt.JWT
 import io.swagger.v3.oas.annotations.Operation
@@ -44,16 +42,6 @@ class BookController {
         val flag = verbose ?: true
         return bookAccessService.getBook(isbn, flag)
     }
-
-    @Operation(summary = "Post a request to update book stocks")
-    @ApiResponses(
-        value = [
-            ApiResponse(responseCode = "202", description = "Stocks updated"),
-            ApiResponse(responseCode = "406", description = "Requested order could not be accepted")
-        ]
-    )
-    @PostMapping("/orders")
-    fun postBookOrder(@RequestBody orders: List<BookOrder>) = bookAccessService.postOrder(UpdateOrderQuery(orders))
 
     @Operation(summary = "Create a single book")
     @ApiResponses(
