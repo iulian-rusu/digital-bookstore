@@ -1,6 +1,6 @@
 package com.pos.orders.controllers
 
-import com.pos.orders.models.PostOrderRequest
+import com.pos.orders.models.requests.PostBookOrderRequest
 import com.pos.orders.services.OrderAccessService
 import com.pos.shared.security.jwt.JWT
 import io.swagger.v3.oas.annotations.Operation
@@ -48,26 +48,9 @@ class OrderController {
     @PostMapping("/client/{clientId}")
     fun postOrder(
         @PathVariable clientId: Long,
-        @RequestBody request: PostOrderRequest,
+        @RequestBody request: PostBookOrderRequest,
         @RequestHeader("Authorization") authHeader: String?
     ) = orderAccessService.postOrder(clientId, request, JWT.getToken(authHeader))
-
-    @Operation(summary = "Create or update an order for a client")
-    @ApiResponses(
-        value = [
-            ApiResponse(responseCode = "201", description = "Order created/updated"),
-            ApiResponse(responseCode = "404", description = "Cannot find ordered item"),
-            ApiResponse(responseCode = "406", description = "Missing or incorrect order data"),
-            ApiResponse(responseCode = "409", description = "Cannot validate order data")
-        ]
-    )
-    @PutMapping("/client/{clientId}/order/{orderId}")
-    fun putOrder(
-        @PathVariable clientId: Long,
-        @PathVariable orderId: String,
-        @RequestBody request: PostOrderRequest,
-        @RequestHeader("Authorization") authHeader: String?
-    ) = orderAccessService.putOrder(clientId, orderId, request, JWT.getToken(authHeader))
 
     @Operation(summary = "Delete all orders for a client")
     @ApiResponses(

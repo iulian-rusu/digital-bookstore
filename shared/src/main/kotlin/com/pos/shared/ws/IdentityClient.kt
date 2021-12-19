@@ -1,12 +1,16 @@
 package com.pos.shared.ws
 
-import com.pos.shared.TokenDestructionRequest
-import com.pos.shared.TokenDestructionResponse
-import com.pos.shared.TokenValidationRequest
-import com.pos.shared.TokenValidationResponse
+import com.pos.shared.*
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport
 
 class IdentityClient: WebServiceGatewaySupport() {
+    fun authenticate(username: String, password: String): UserAuthenticationResponse {
+        val request = UserAuthenticationRequest()
+        request.username = username
+        request.password = password
+        return post(request)
+    }
+
     fun validateToken(token: String): TokenValidationResponse {
         val request = TokenValidationRequest()
         request.token = token
@@ -19,5 +23,5 @@ class IdentityClient: WebServiceGatewaySupport() {
         return post(request)
     }
 
-    inline fun <reified R> post(request: Any) = webServiceTemplate.marshalSendAndReceive(request) as R
+    private inline fun <reified R> post(request: Any) = webServiceTemplate.marshalSendAndReceive(request) as R
 }

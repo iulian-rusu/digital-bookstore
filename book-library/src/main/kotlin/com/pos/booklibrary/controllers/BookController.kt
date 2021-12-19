@@ -3,6 +3,7 @@ package com.pos.booklibrary.controllers
 import com.pos.booklibrary.models.BasicBook
 import com.pos.booklibrary.persistence.query.SearchBookQuery
 import com.pos.booklibrary.models.Book
+import com.pos.booklibrary.models.BookOrderRequest
 import com.pos.booklibrary.services.BookAccessService
 import com.pos.shared.security.jwt.JWT
 import io.swagger.v3.oas.annotations.Operation

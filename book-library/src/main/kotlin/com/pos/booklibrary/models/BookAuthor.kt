@@ -20,19 +20,16 @@ class BookAuthor(
     private var authorId: Long = -1,
 ) {
     fun getIsbn() = isbn
-
     fun setIsbn(value: String) {
         isbn = value
     }
 
     fun getAuthorIndex() = authorIndex
-
     fun setAuthorIndex(value: Long) {
         authorIndex = value
     }
 
     fun getAuthorId() = authorId
-
     fun setAuthorId(value: Long) {
         authorId = value
     }

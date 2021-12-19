@@ -5,8 +5,10 @@ CREATE TABLE IF NOT EXISTS books
     publisher    VARCHAR(64)  NOT NULL,
     publish_year INTEGER      NOT NULL,
     genre        VARCHAR(64)  NOT NULL,
+    price        INTEGER      NOT NULL,
     stock        INTEGER      NOT NULL,
     CONSTRAINT pk_books PRIMARY KEY (isbn),
+    CONSTRAINT ck_books_price CHECK (price >= 0),
     CONSTRAINT ck_books_stock CHECK (stock >= 0)
 );
 

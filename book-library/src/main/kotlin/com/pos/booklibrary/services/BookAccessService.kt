@@ -8,6 +8,7 @@ import com.pos.booklibrary.persistence.BookAuthorRepository
 import com.pos.booklibrary.persistence.BookRepository
 import com.pos.booklibrary.persistence.GenericQueryRepository
 import com.pos.booklibrary.persistence.mappers.BookRowMapper
+import com.pos.booklibrary.persistence.query.UpdateStockQuery
 import com.pos.booklibrary.views.BookAuthorModelAssembler
 import com.pos.booklibrary.views.BookModelAssembler
 import com.pos.shared.security.UserRole

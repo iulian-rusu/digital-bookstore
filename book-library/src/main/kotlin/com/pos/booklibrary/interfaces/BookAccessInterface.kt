@@ -1,9 +1,7 @@
 package com.pos.booklibrary.interfaces
 
-import com.pos.booklibrary.models.BasicBook
+import com.pos.booklibrary.models.*
 import com.pos.booklibrary.persistence.query.SearchBookQuery
-import com.pos.booklibrary.models.Book
-import com.pos.booklibrary.models.BookAuthor
 import org.springframework.hateoas.CollectionModel
 import org.springframework.hateoas.EntityModel
 import org.springframework.http.ResponseEntity

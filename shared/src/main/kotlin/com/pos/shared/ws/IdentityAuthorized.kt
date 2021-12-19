@@ -11,6 +11,10 @@ abstract class IdentityAuthorized {
     @Autowired
     private lateinit var identityClient: IdentityClient
 
+    protected fun getTokenFor(username: String, password: String): String {
+        return identityClient.authenticate(username, password).token
+    }
+
     protected fun <T> ifAuthorized(token: String?, role: String, action: () -> ResponseEntity<T>): ResponseEntity<T> {
         return withAuthorization(
             token = token,
@@ -34,9 +38,13 @@ abstract class IdentityAuthorized {
     ): ResponseEntity<T> {
         if (token == null)
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
-        val response = identityClient.validateToken(token)
-        if (!authorizer(response))
+        try {
+            val response = identityClient.validateToken(token)
+            if (!authorizer(response))
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        } catch (e: Exception) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         return action()
     }
 }

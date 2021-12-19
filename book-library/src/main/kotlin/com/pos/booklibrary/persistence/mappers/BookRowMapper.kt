@@ -12,6 +12,7 @@ class BookRowMapper : RowMapper<Book> {
             publisher = rs.getString("publisher"),
             publishYear = rs.getInt("publish_year"),
             genre = rs.getString("genre"),
+            price = rs.getInt("price"),
             stock = rs.getInt("stock")
         )
 }

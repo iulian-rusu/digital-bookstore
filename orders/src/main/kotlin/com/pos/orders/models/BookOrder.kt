@@ -4,11 +4,11 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 
 @Document
-class Order(
+class BookOrder(
     @Id
     private var orderId: String?,
     private var date: String = "",
-    private var items: List<BookOrderInfo> = listOf(),
+    private var items: List<BookOrderEntry> = listOf(),
     private var status: String = ""
 ) {
     fun getOrderId() = orderId
@@ -22,7 +22,7 @@ class Order(
     }
 
     fun getItems() = items
-    fun setItems(value: List<BookOrderInfo>) {
+    fun setItems(value: List<BookOrderEntry>) {
         items = value
     }
 

@@ -1,22 +1,15 @@
 package com.pos.orders.interfaces
 
-import com.pos.orders.models.Order
-import com.pos.orders.models.PostOrderRequest
+import com.pos.orders.models.BookOrder
+import com.pos.orders.models.requests.PostBookOrderRequest
 import org.springframework.hateoas.CollectionModel
 import org.springframework.hateoas.EntityModel
 import org.springframework.http.ResponseEntity
 
 interface OrderAccessInterface {
-    fun getAllOrders(clientId: Long, token: String?): ResponseEntity<CollectionModel<EntityModel<Order>>>
-    fun getOrder(clientId: Long, orderId: String, token: String?): ResponseEntity<EntityModel<Order>>
-    fun postOrder(clientId: Long, request: PostOrderRequest, token: String?): ResponseEntity<EntityModel<Order>>
-    fun putOrder(
-        clientId: Long,
-        orderId: String,
-        request: PostOrderRequest,
-        token: String?
-    ): ResponseEntity<EntityModel<Order>>
-
+    fun getAllOrders(clientId: Long, token: String?): ResponseEntity<CollectionModel<EntityModel<BookOrder>>>
+    fun getOrder(clientId: Long, orderId: String, token: String?): ResponseEntity<EntityModel<BookOrder>>
+    fun postOrder(clientId: Long, request: PostBookOrderRequest, token: String?): ResponseEntity<EntityModel<BookOrder>>
     fun deleteAllOrders(clientId: Long, token: String?): ResponseEntity<Unit>
     fun deleteOrder(clientId: Long, orderId: String, token: String?): ResponseEntity<Unit>
 }

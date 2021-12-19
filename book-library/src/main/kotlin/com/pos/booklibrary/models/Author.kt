@@ -17,19 +17,16 @@ class Author(
     private var lastName: String = ""
 ) {
     fun getId() = id
-
     fun setId(value: Long) {
         id = value
     }
 
     fun getFirstName() = firstName
-
     fun setFirstName(value: String) {
         firstName = value
     }
 
     fun getLastName() = lastName
-
     fun setLasttName(value: String) {
         lastName = value
     }
