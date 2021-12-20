@@ -3,7 +3,7 @@ package com.pos.booklibrary.controllers
 import com.pos.booklibrary.models.BasicBook
 import com.pos.booklibrary.persistence.query.SearchBookQuery
 import com.pos.booklibrary.models.Book
-import com.pos.booklibrary.models.BookOrderRequest
+import com.pos.booklibrary.models.requests.StockUpdateRequest
 import com.pos.booklibrary.services.BookAccessService
 import com.pos.shared.security.jwt.JWT
 import io.swagger.v3.oas.annotations.Operation
@@ -145,4 +145,17 @@ class BookController {
     @DeleteMapping("/books/{isbn}/authors")
     fun deleteBookAuthors(@PathVariable isbn: String, @RequestHeader("Authorization") authHeader: String?) =
         bookAccessService.deleteBookAuthors(isbn, JWT.getToken(authHeader))
+
+    @Operation(summary = "Post a request to update book stocks")
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "202", description = "Stocks updated"),
+            ApiResponse(responseCode = "406", description = "Requested order could not be accepted")
+        ]
+    )
+    @PostMapping("/books/stocks")
+    fun postStockUpdate(
+        @RequestBody request: StockUpdateRequest,
+        @RequestHeader("Authorization") authHeader: String?
+    ) = bookAccessService.postStockUpdate(request, JWT.getToken(authHeader))
 }

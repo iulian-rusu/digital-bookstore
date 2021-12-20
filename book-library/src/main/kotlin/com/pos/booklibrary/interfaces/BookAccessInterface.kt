@@ -1,6 +1,7 @@
 package com.pos.booklibrary.interfaces
 
 import com.pos.booklibrary.models.*
+import com.pos.booklibrary.models.requests.StockUpdateRequest
 import com.pos.booklibrary.persistence.query.SearchBookQuery
 import org.springframework.hateoas.CollectionModel
 import org.springframework.hateoas.EntityModel
@@ -22,4 +23,5 @@ interface BookAccessInterface {
 
     fun deleteBookAuthor(isbn: String, index: Long, token: String?): ResponseEntity<Unit>
     fun deleteBookAuthors(isbn: String, token: String?): ResponseEntity<Unit>
+    fun postStockUpdate(request: StockUpdateRequest, token: String?): ResponseEntity<CollectionModel<EntityModel<BasicBook>>>
 }

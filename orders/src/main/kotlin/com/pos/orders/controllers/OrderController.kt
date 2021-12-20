@@ -1,6 +1,6 @@
 package com.pos.orders.controllers
 
-import com.pos.orders.models.requests.PostBookOrderRequest
+import com.pos.orders.models.requests.BookOrderRequest
 import com.pos.orders.services.OrderAccessService
 import com.pos.shared.security.jwt.JWT
 import io.swagger.v3.oas.annotations.Operation
@@ -48,7 +48,7 @@ class OrderController {
     @PostMapping("/client/{clientId}")
     fun postOrder(
         @PathVariable clientId: Long,
-        @RequestBody request: PostBookOrderRequest,
+        @RequestBody request: BookOrderRequest,
         @RequestHeader("Authorization") authHeader: String?
     ) = orderAccessService.postOrder(clientId, request, JWT.getToken(authHeader))
 

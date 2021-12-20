@@ -4,7 +4,7 @@ import com.pos.orders.controllers.OrderController
 import com.pos.orders.interfaces.OrderAccessInterface
 import com.pos.orders.interfaces.OrderResolutionInterface
 import com.pos.orders.models.BookOrder
-import com.pos.orders.models.requests.PostBookOrderRequest
+import com.pos.orders.models.requests.BookOrderRequest
 import com.pos.orders.views.OrderModelAssembler
 import com.pos.shared.ws.IdentityAuthorized
 import org.slf4j.LoggerFactory
@@ -73,7 +73,7 @@ class OrderAccessService : IdentityAuthorized(), OrderAccessInterface {
 
     override fun postOrder(
         clientId: Long,
-        request: PostBookOrderRequest,
+        request: BookOrderRequest,
         token: String?
     ): ResponseEntity<EntityModel<BookOrder>> {
         return try {
@@ -137,7 +137,7 @@ class OrderAccessService : IdentityAuthorized(), OrderAccessInterface {
     }
 
     private fun collectionNameFor(clientId: Long) = "client$clientId"
-    private fun isValidRequest(request: PostBookOrderRequest) = request.items.all {
+    private fun isValidRequest(request: BookOrderRequest) = request.items.all {
         it.quantity > 0 && it.isbn.isNotEmpty()
     }
 }

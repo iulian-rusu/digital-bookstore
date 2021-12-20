@@ -1,8 +1,8 @@
 package com.pos.orders.interfaces
 
 import com.pos.orders.models.BookOrder
-import com.pos.orders.models.requests.PostBookOrderRequest
+import com.pos.orders.models.requests.BookOrderRequest
 
 interface OrderResolutionInterface {
-    fun resolveOrder(request: PostBookOrderRequest): BookOrder
+    fun resolveOrder(request: BookOrderRequest): BookOrder
 }

@@ -4,11 +4,13 @@ import com.pos.booklibrary.controllers.BookController
 import com.pos.booklibrary.persistence.query.SearchBookQuery
 import com.pos.booklibrary.interfaces.BookAccessInterface
 import com.pos.booklibrary.models.*
+import com.pos.booklibrary.models.requests.StockUpdateRequest
 import com.pos.booklibrary.persistence.BookAuthorRepository
 import com.pos.booklibrary.persistence.BookRepository
 import com.pos.booklibrary.persistence.GenericQueryRepository
 import com.pos.booklibrary.persistence.mappers.BookRowMapper
-import com.pos.booklibrary.persistence.query.UpdateStockQuery
+import com.pos.booklibrary.persistence.query.SearchBookListQuery
+import com.pos.booklibrary.persistence.query.UpdateBookStockQuery
 import com.pos.booklibrary.views.BookAuthorModelAssembler
 import com.pos.booklibrary.views.BookModelAssembler
 import com.pos.shared.security.UserRole
@@ -34,7 +36,7 @@ class BookAccessService : IdentityAuthorized(), BookAccessInterface {
     private lateinit var bookAuthorRepository: BookAuthorRepository
 
     @Autowired
-    private lateinit var customQueryRepository: GenericQueryRepository
+    private lateinit var genericQueryRepository: GenericQueryRepository
 
     @Autowired
     private lateinit var bookAssembler: BookModelAssembler
@@ -44,9 +46,9 @@ class BookAccessService : IdentityAuthorized(), BookAccessInterface {
 
     private val logger = LoggerFactory.getLogger(BookAccessService::class.java)
 
-    override fun getAllBooks(query: SearchBookQuery): ResponseEntity<CollectionModel<EntityModel<BasicBook>>> =
-        try {
-            customQueryRepository.find(query, BookRowMapper())
+    override fun getAllBooks(query: SearchBookQuery): ResponseEntity<CollectionModel<EntityModel<BasicBook>>> {
+        return try {
+            genericQueryRepository.find(query, BookRowMapper())
                 .map(bookAssembler::toModel)
                 .let { modelList ->
                     ResponseEntity.ok(
@@ -60,6 +62,7 @@ class BookAccessService : IdentityAuthorized(), BookAccessInterface {
             logger.error("getAllBooks(): $e")
             ResponseEntity.status(HttpStatus.BAD_REQUEST).build()
         }
+    }
 
     override fun getBook(isbn: String, verbose: Boolean): ResponseEntity<EntityModel<BasicBook>> =
         bookRepository.findByIdOrNull(isbn)
@@ -184,6 +187,31 @@ class BookAccessService : IdentityAuthorized(), BookAccessInterface {
         } catch (e: Exception) {
             logger.error("deleteBookAuthors(isbn=$isbn): $e")
             ResponseEntity.notFound().build()
+        }
+    }
+
+    override fun postStockUpdate(
+        request: StockUpdateRequest,
+        token: String?
+    ): ResponseEntity<CollectionModel<EntityModel<BasicBook>>> {
+        return try {
+            ifAuthorized(token, UserRole.MANAGER) {
+                genericQueryRepository.execute(UpdateBookStockQuery(request))
+                val isbnList = request.items.map { it.isbn }
+                genericQueryRepository.find(SearchBookListQuery(isbnList), BookRowMapper())
+                    .map(bookAssembler::toModel)
+                    .let { modelList ->
+                        ResponseEntity.ok(
+                            CollectionModel.of(
+                                modelList,
+                                linkTo(methodOn(BookController::class.java).getAllBooks(emptyMap())).withSelfRel()
+                            )
+                        )
+                    }
+            }
+        } catch (e: Exception) {
+            logger.error("getAllBooks(): $e")
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).build()
         }
     }
 
