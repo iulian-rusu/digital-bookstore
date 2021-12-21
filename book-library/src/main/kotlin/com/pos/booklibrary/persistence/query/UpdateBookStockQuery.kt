@@ -1,6 +1,6 @@
 package com.pos.booklibrary.persistence.query
 
-import com.pos.booklibrary.models.requests.StockUpdateRequest
+import com.pos.booklibrary.api.requests.StockUpdateRequest
 
 class UpdateBookStockQuery(request: StockUpdateRequest) : ParametrizedQuery() {
     private val items = request.items

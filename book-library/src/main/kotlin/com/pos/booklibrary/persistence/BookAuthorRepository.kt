@@ -1,7 +1,7 @@
 package com.pos.booklibrary.persistence
 
-import com.pos.booklibrary.models.BookAuthor
-import com.pos.booklibrary.models.BookAuthorIndex
+import com.pos.booklibrary.business.models.BookAuthor
+import com.pos.booklibrary.business.models.BookAuthorIndex
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository

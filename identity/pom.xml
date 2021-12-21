@@ -19,6 +19,13 @@
         <kotlin.version>1.5.31</kotlin.version>
     </properties>
     <dependencies>
+        <!-- add reference to identity-management web service -->
+        <dependency>
+            <groupId>com.pos</groupId>
+            <artifactId>shared</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <!-- other external dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>

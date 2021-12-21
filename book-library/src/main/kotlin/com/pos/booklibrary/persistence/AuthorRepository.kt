@@ -1,6 +1,6 @@
 package com.pos.booklibrary.persistence
 
-import com.pos.booklibrary.models.Author
+import com.pos.booklibrary.business.models.Author
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository

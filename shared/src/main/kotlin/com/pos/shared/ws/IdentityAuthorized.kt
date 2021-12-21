@@ -15,7 +15,7 @@ abstract class IdentityAuthorized {
         return identityClient.authenticate(username, password).token
     }
 
-    protected fun <T> ifAuthorized(token: String?, role: String, action: () -> ResponseEntity<T>): ResponseEntity<T> {
+    protected fun <T> ifAuthorizedAs(role: String, token: String?, action: () -> ResponseEntity<T>): ResponseEntity<T> {
         return withAuthorization(
             token = token,
             authorizer = { response -> response.role == role },
@@ -23,7 +23,7 @@ abstract class IdentityAuthorized {
         )
     }
 
-    protected fun <T> ifAuthorized(token: String?, sub: Long, action: () -> ResponseEntity<T>): ResponseEntity<T> {
+    protected fun <T> ifAuthorizedAs(sub: Long, token: String?, action: () -> ResponseEntity<T>): ResponseEntity<T> {
         return withAuthorization(
             token = token,
             authorizer = { response -> response.sub == sub },

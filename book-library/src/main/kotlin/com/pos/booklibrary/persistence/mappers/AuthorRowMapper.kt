@@ -1,6 +1,6 @@
 package com.pos.booklibrary.persistence.mappers
 
-import com.pos.booklibrary.models.Author
+import com.pos.booklibrary.business.models.Author
 import org.springframework.jdbc.core.RowMapper
 import java.sql.ResultSet
 

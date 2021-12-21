@@ -1,6 +1,6 @@
 package com.pos.identity.persistence.mappers
 
-import com.pos.identity.models.User
+import com.pos.identity.business.models.User
 import org.springframework.jdbc.core.RowMapper
 import java.sql.ResultSet
 

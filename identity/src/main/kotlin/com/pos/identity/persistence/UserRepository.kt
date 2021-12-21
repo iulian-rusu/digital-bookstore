@@ -1,11 +1,11 @@
 package com.pos.identity.persistence
 
-import com.pos.identity.models.User
+import com.pos.identity.business.models.User
 import com.pos.identity.persistence.mappers.UserRowMapper
-import com.pos.identity.security.Encoder
-import com.pos.identity.security.UserRole
+import com.pos.identity.business.security.Encoder
 import org.springframework.stereotype.Repository
 import com.pos.identity.*
+import com.pos.shared.security.UserRole
 
 @Repository
 class UserRepository : RepositoryBase() {
