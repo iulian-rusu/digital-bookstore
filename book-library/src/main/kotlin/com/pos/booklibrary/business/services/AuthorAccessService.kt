@@ -1,15 +1,15 @@
 package com.pos.booklibrary.business.services
 
 import com.pos.booklibrary.api.controllers.AuthorController
-import com.pos.booklibrary.persistence.query.SearchAuthorQuery
+import com.pos.booklibrary.api.views.AuthorModelAssembler
 import com.pos.booklibrary.business.interfaces.AuthorAccessInterface
-import com.pos.booklibrary.persistence.AuthorRepository
 import com.pos.booklibrary.business.models.Author
+import com.pos.booklibrary.persistence.AuthorRepository
 import com.pos.booklibrary.persistence.GenericQueryRepository
 import com.pos.booklibrary.persistence.mappers.AuthorRowMapper
-import com.pos.booklibrary.api.views.AuthorModelAssembler
+import com.pos.booklibrary.persistence.query.SearchAuthorQuery
+import com.pos.shared.identity.IdentityAuthorized
 import com.pos.shared.security.UserRole
-import com.pos.shared.ws.IdentityAuthorized
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull

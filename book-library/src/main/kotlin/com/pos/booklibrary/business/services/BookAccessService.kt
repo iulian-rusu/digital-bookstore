@@ -1,9 +1,10 @@
 package com.pos.booklibrary.business.services
 
 import com.pos.booklibrary.api.controllers.BookController
-import com.pos.booklibrary.persistence.query.SearchBookQuery
-import com.pos.booklibrary.business.interfaces.BookAccessInterface
 import com.pos.booklibrary.api.requests.StockUpdateRequest
+import com.pos.booklibrary.api.views.BookAuthorModelAssembler
+import com.pos.booklibrary.api.views.BookModelAssembler
+import com.pos.booklibrary.business.interfaces.BookAccessInterface
 import com.pos.booklibrary.business.models.BasicBook
 import com.pos.booklibrary.business.models.Book
 import com.pos.booklibrary.business.models.BookAuthor
@@ -13,11 +14,10 @@ import com.pos.booklibrary.persistence.BookRepository
 import com.pos.booklibrary.persistence.GenericQueryRepository
 import com.pos.booklibrary.persistence.mappers.BookRowMapper
 import com.pos.booklibrary.persistence.query.SearchBookListQuery
+import com.pos.booklibrary.persistence.query.SearchBookQuery
 import com.pos.booklibrary.persistence.query.UpdateBookStockQuery
-import com.pos.booklibrary.api.views.BookAuthorModelAssembler
-import com.pos.booklibrary.api.views.BookModelAssembler
+import com.pos.shared.identity.IdentityAuthorized
 import com.pos.shared.security.UserRole
-import com.pos.shared.ws.IdentityAuthorized
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull

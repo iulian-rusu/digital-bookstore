@@ -1,11 +1,11 @@
 package com.pos.orders.business.services
 
+import com.pos.orders.api.requests.BookOrderRequest
 import com.pos.orders.business.interfaces.OrderResolutionInterface
 import com.pos.orders.business.models.BookOrder
 import com.pos.orders.business.models.BookOrderEntry
 import com.pos.orders.business.models.OrderStatus
-import com.pos.orders.api.requests.BookOrderRequest
-import com.pos.shared.ws.IdentityAuthorized
+import com.pos.shared.identity.IdentityAuthorized
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -15,7 +15,6 @@ import org.springframework.web.client.RestTemplate
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.annotation.PostConstruct
-import kotlin.collections.LinkedHashMap
 
 typealias ResponseType = LinkedHashMap<String, LinkedHashMap<String, List<LinkedHashMap<String, Any>>>>
 

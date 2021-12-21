@@ -1,4 +1,4 @@
-package com.pos.shared.ws
+package com.pos.shared.identity
 
 import com.pos.shared.TokenValidationResponse
 import org.springframework.beans.factory.annotation.Autowired

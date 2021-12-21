@@ -1,6 +1,6 @@
 package com.pos.booklibrary.business.config
 
-import com.pos.shared.ws.IdentityClient
+import com.pos.shared.identity.IdentityClient
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.oxm.jaxb.Jaxb2Marshaller

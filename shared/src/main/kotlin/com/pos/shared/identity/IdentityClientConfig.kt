@@ -1,4 +1,4 @@
-package com.pos.shared.ws
+package com.pos.shared.identity
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

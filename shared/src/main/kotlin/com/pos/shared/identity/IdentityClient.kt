@@ -1,4 +1,4 @@
-package com.pos.shared.ws
+package com.pos.shared.identity
 
 import com.pos.shared.*
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport

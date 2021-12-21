@@ -1,14 +1,14 @@
 package com.pos.orders.business.services
 
 import com.pos.orders.api.controllers.OrderController
-import com.pos.orders.business.interfaces.OrderAccessInterface
-import com.pos.orders.business.interfaces.OrderResolutionInterface
-import com.pos.orders.business.models.BookOrder
 import com.pos.orders.api.requests.BookOrderRequest
 import com.pos.orders.api.requests.UpdateOrderRequest
 import com.pos.orders.api.views.OrderModelAssembler
+import com.pos.orders.business.interfaces.OrderAccessInterface
+import com.pos.orders.business.interfaces.OrderResolutionInterface
+import com.pos.orders.business.models.BookOrder
 import com.pos.orders.business.models.OrderStatus
-import com.pos.shared.ws.IdentityAuthorized
+import com.pos.shared.identity.IdentityAuthorized
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.mongodb.core.MongoTemplate
