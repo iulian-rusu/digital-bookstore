@@ -1,8 +1,8 @@
 package com.pos.booklibrary.api.controllers
 
-import com.pos.booklibrary.persistence.query.SearchAuthorQuery
 import com.pos.booklibrary.business.models.Author
 import com.pos.booklibrary.business.services.AuthorAccessService
+import com.pos.booklibrary.persistence.query.SearchAuthorQuery
 import com.pos.shared.security.jwt.JWT
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api/book-library")
+@RequestMapping("/api/book-library/authors")
 class AuthorController {
     @Autowired
     private lateinit var authorAccessService: AuthorAccessService
@@ -23,7 +23,7 @@ class AuthorController {
             ApiResponse(responseCode = "400", description = "Bad request parameters")
         ]
     )
-    @GetMapping("/authors")
+    @GetMapping("")
     fun getAllAuthors(@RequestParam params: Map<String, String>) =
         authorAccessService.getAllAuthors(SearchAuthorQuery(params))
 
@@ -34,7 +34,7 @@ class AuthorController {
             ApiResponse(responseCode = "404", description = "Author not found")
         ]
     )
-    @GetMapping("/authors/{id}")
+    @GetMapping("/{id}")
     fun getAuthor(@PathVariable id: Long) = authorAccessService.getAuthor(id)
 
     @Operation(summary = "Create a single author")
@@ -44,7 +44,7 @@ class AuthorController {
             ApiResponse(responseCode = "406", description = "Missing or invalid author data")
         ]
     )
-    @PostMapping("/authors")
+    @PostMapping("")
     fun postAuthor(@RequestBody newAuthor: Author, @RequestHeader("Authorization") authHeader: String?) =
         authorAccessService.postAuthor(newAuthor, JWT.getToken(authHeader))
 
@@ -57,7 +57,7 @@ class AuthorController {
             ApiResponse(responseCode = "409", description = "Error when inserting author data"),
         ]
     )
-    @PutMapping("/authors/{id}")
+    @PutMapping("/{id}")
     fun putAuthor(
         @PathVariable id: Long,
         @RequestBody newAuthor: Author,
@@ -71,7 +71,7 @@ class AuthorController {
             ApiResponse(responseCode = "404", description = "Author not found")
         ]
     )
-    @DeleteMapping("/authors/{id}")
+    @DeleteMapping("/{id}")
     fun deleteAuthor(@PathVariable id: Long, @RequestHeader("Authorization") authHeader: String?) =
         authorAccessService.deleteAuthor(id, JWT.getToken(authHeader))
 }

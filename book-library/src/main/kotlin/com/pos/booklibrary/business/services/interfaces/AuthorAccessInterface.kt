@@ -1,7 +1,7 @@
-package com.pos.booklibrary.business.interfaces
+package com.pos.booklibrary.business.services.interfaces
 
-import com.pos.booklibrary.persistence.query.SearchAuthorQuery
 import com.pos.booklibrary.business.models.Author
+import com.pos.booklibrary.persistence.query.SearchAuthorQuery
 import org.springframework.hateoas.CollectionModel
 import org.springframework.hateoas.EntityModel
 import org.springframework.http.ResponseEntity

@@ -1,10 +1,11 @@
 package com.pos.identity.business.security.jwt
 
-import com.pos.identity.api.endpoints.IdentityManagementEndpoint
 import com.pos.identity.business.models.User
-import com.pos.identity.persistence.UserRepository
 import com.pos.identity.business.security.exceptions.JwtAuthenticationException
-import io.jsonwebtoken.*
+import com.pos.identity.endpoints.IdentityManagementEndpoint
+import com.pos.identity.persistence.UserRepository
+import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.SignatureAlgorithm
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.util.*

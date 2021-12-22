@@ -1,4 +1,4 @@
-package com.pos.identity.api.endpoints
+package com.pos.identity.endpoints
 
 import org.springframework.boot.web.servlet.ServletRegistrationBean
 import org.springframework.context.ApplicationContext

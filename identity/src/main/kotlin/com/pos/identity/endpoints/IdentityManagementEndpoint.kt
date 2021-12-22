@@ -1,8 +1,8 @@
-package com.pos.identity.api.endpoints
+package com.pos.identity.endpoints
 
 import com.pos.identity.*
-import com.pos.identity.business.interfaces.JwtManagementInterface
-import com.pos.identity.business.interfaces.UserManagementInterface
+import com.pos.identity.business.services.interfaces.JwtManagementInterface
+import com.pos.identity.business.services.interfaces.UserManagementInterface
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.ws.server.endpoint.annotation.Endpoint
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot

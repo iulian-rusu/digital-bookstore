@@ -4,8 +4,8 @@ import com.pos.identity.TokenDestructionRequest
 import com.pos.identity.TokenDestructionResponse
 import com.pos.identity.TokenValidationRequest
 import com.pos.identity.TokenValidationResponse
-import com.pos.identity.business.interfaces.JwtManagementInterface
 import com.pos.identity.business.security.jwt.JwtProvider
+import com.pos.identity.business.services.interfaces.JwtManagementInterface
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 

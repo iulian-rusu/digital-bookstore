@@ -4,11 +4,11 @@ import com.pos.booklibrary.api.controllers.BookController
 import com.pos.booklibrary.api.requests.StockUpdateRequest
 import com.pos.booklibrary.api.views.BookAuthorModelAssembler
 import com.pos.booklibrary.api.views.BookModelAssembler
-import com.pos.booklibrary.business.interfaces.BookAccessInterface
 import com.pos.booklibrary.business.models.BasicBook
 import com.pos.booklibrary.business.models.Book
 import com.pos.booklibrary.business.models.BookAuthor
 import com.pos.booklibrary.business.models.BriefBook
+import com.pos.booklibrary.business.services.interfaces.BookAccessInterface
 import com.pos.booklibrary.persistence.BookAuthorRepository
 import com.pos.booklibrary.persistence.BookRepository
 import com.pos.booklibrary.persistence.GenericQueryRepository

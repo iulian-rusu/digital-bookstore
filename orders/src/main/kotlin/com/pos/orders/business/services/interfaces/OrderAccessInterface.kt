@@ -1,8 +1,8 @@
-package com.pos.orders.business.interfaces
+package com.pos.orders.business.services.interfaces
 
-import com.pos.orders.business.models.BookOrder
 import com.pos.orders.api.requests.BookOrderRequest
 import com.pos.orders.api.requests.UpdateOrderRequest
+import com.pos.orders.business.models.BookOrder
 import org.springframework.hateoas.CollectionModel
 import org.springframework.hateoas.EntityModel
 import org.springframework.http.ResponseEntity

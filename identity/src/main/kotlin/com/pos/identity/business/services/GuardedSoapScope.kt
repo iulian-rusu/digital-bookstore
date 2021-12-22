@@ -16,5 +16,5 @@ abstract class GuardedSoapScope(guardedClass: Class<*>) {
         }
     }
 
-    private fun errorHandler(e: Exception): Nothing = throw SOAPException(e.message, e)
+    private fun errorHandler(e: Exception): Nothing = throw SOAPException("Cannot execute action", e)
 }

@@ -1,4 +1,4 @@
-package com.pos.booklibrary.business.interfaces
+package com.pos.booklibrary.business.services.interfaces
 
 import com.pos.booklibrary.api.requests.StockUpdateRequest
 import com.pos.booklibrary.business.models.BasicBook

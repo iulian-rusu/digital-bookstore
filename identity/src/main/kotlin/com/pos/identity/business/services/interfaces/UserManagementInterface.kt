@@ -1,4 +1,4 @@
-package com.pos.identity.business.interfaces
+package com.pos.identity.business.services.interfaces
 
 import com.pos.identity.*
 

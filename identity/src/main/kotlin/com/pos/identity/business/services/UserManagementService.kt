@@ -1,14 +1,14 @@
 package com.pos.identity.business.services
 
 import com.pos.identity.*
-import com.pos.identity.business.interfaces.UserManagementInterface
+import com.pos.identity.business.security.Encoder
+import com.pos.identity.business.security.exceptions.AuthorizationException
+import com.pos.identity.business.security.exceptions.PasswordAuthenticationException
+import com.pos.identity.business.security.jwt.JwtProvider
+import com.pos.identity.business.services.interfaces.UserManagementInterface
 import com.pos.identity.persistence.GenericQueryRepository
 import com.pos.identity.persistence.UserRepository
 import com.pos.identity.persistence.query.UpdateUserQuery
-import com.pos.identity.business.security.Encoder
-import com.pos.identity.business.security.exceptions.PasswordAuthenticationException
-import com.pos.identity.business.security.exceptions.AuthorizationException
-import com.pos.identity.business.security.jwt.JwtProvider
 import com.pos.shared.security.UserRole
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -43,6 +43,10 @@ class UserManagementService : GuardedSoapScope(UserManagementService::class.java
     override fun register(request: UserRegistrationRequest): UserRegistrationResponse {
         val response = UserRegistrationResponse()
         guardedScope {
+            val details = jwtProvider.getUser(request.token)
+            if (details.role != UserRole.ADMIN)
+                throw AuthorizationException("Not authorized to create users")
+
             val savedUser = userRepository.save(request)
             response.token = jwtProvider.createToken(savedUser)
         }
@@ -55,11 +59,11 @@ class UserManagementService : GuardedSoapScope(UserManagementService::class.java
             val details = jwtProvider.getUser(request.token)
 
             if (request.password != null && request.userId != details.userId)
-                throw AuthorizationException("Update user password")
+                throw AuthorizationException("Not authorized to modify user password")
 
             request.role?.let {
                 if (details.role != UserRole.ADMIN)
-                    throw AuthorizationException("Update user role")
+                    throw AuthorizationException("Not authorized to modify user role")
                 if (it !in UserRole.VALUES)
                     throw InvalidRoleValueException("Not a valid user role")
             }
@@ -80,8 +84,8 @@ class UserManagementService : GuardedSoapScope(UserManagementService::class.java
         guardedScope {
             val details = jwtProvider.getUser(request.token)
 
-            if (details.userId != request.userId)
-                throw AuthorizationException("delete user")
+            if (details.role != UserRole.ADMIN && details.userId != request.userId)
+                throw AuthorizationException("Not authorized to delete user")
 
             val toDelete = userRepository.findOne(request.userId)
             userRepository.deleteOne(request)

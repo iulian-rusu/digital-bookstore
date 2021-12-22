@@ -1,4 +1,4 @@
-package com.pos.booklibrary.business.config
+package com.pos.orders.business.config
 
 import com.pos.shared.identity.IdentityClient
 import org.springframework.context.annotation.Bean
@@ -6,10 +6,10 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.oxm.jaxb.Jaxb2Marshaller
 
 @Configuration
-class IdentityClientConfig {
+class IdentityClientConfiguration {
     companion object {
-        val IDENTITY_HOST = System.getenv("IDENTITY_HOST") ?: "localhost"
-        val IDENTITY_PORT = System.getenv("IDENTITY_PORT") ?: "8082"
+        private val IDENTITY_HOST = System.getenv("IDENTITY_HOST") ?: "localhost"
+        private val IDENTITY_PORT = System.getenv("IDENTITY_PORT") ?: "8082"
     }
 
     @Bean

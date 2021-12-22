@@ -1,3 +1,3 @@
 package com.pos.identity.business.security.exceptions
 
-class AuthorizationException(msg: String): RuntimeException("Not authorized for action '$msg'")
+class AuthorizationException(msg: String): RuntimeException(msg)
