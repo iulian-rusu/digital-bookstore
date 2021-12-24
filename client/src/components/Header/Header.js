@@ -20,6 +20,13 @@ export default class Header extends Component {
         this.setCartPage = () => {
             this.props.setCurrentPage("cart")
         }
+
+        this.renderCartButton = () => {
+            if (this.props.user.role === "ROLE_USER") {
+                return  <button className='brightButton' onClick={this.setCartPage}>Cart</button>
+            }
+            return null
+        }
     }
 
     render() {
@@ -27,7 +34,7 @@ export default class Header extends Component {
             <div className='Header flexColumn alignCenter'>
                 <div id='logoName'>Digital Bookstore</div>
                 <div id='menu'>
-                    {this.props.user ? <button className='brightButton' onClick={this.setCartPage}>Cart</button> : null}
+                    {this.props.user ? this.renderCartButton() : null}
                     {this.props.user ? <button className='brightButton' onClick={this.setBooksPage}>Books</button> : null}
                     {this.props.user ? <button className='brightButton' onClick={this.setProfilePage}>Profile</button> : null}
                     {this.props.user ? <button className='brightButton' onClick={this.onLogOut}>Log Out</button> : null}

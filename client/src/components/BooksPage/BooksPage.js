@@ -44,7 +44,7 @@ export default class HomePage extends Component {
                     <button class='brightButton' id='searchButton' onClick={this.clearAuthorFilter}>Clear</button>
                 </div>
                 <BookTable
-                    token={this.props.user.token}
+                    user={this.props.user}
                     orderItem={this.props.orderItem}
                     authorFilter={this.state.authorFilter}
                 />

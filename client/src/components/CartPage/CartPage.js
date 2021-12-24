@@ -10,7 +10,7 @@ export default class CartPage extends Component {
     render() {
         return (
             <div className='CartPage flexColumn alignCenter'>
-                <div>
+                <div id="cartOptions">
                     <button className='brightButton' onClick={this.finalizeOrder}>Finalize Order</button>
                 </div>
                 <OrderTable currentOrder={this.props.currentOrder} removeOrderedItem={this.props.removeOrderedItem} />

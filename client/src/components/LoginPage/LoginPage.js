@@ -39,7 +39,7 @@ export default class LoginPage extends Component {
                 this.props.setUser({
                     token: "TODO",
                     username: this.state.username,
-                    role: "ROLE_USER"
+                    role: this.state.username === "www" ? "ROLE_MANAGER" : "ROLE_USER"
                 })
             }
             event.preventDefault()
@@ -49,7 +49,7 @@ export default class LoginPage extends Component {
 
     render() {
         return (
-            <div className='LoginPage'>
+            <div className='LoginPage flexColumn alignCenter'>
                 <h3 id="loginMessage">Please enter your username and password</h3>
                 <form id="loginForm">
                     <input type="text" placeholder="username" autoComplete="off"

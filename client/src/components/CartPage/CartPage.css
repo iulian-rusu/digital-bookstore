@@ -1,3 +1,7 @@
 .CartPage {
     padding: 20px;
 }
+
+#cartOptions {
+    margin-bottom: 10px;
+}

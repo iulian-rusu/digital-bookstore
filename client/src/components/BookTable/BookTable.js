@@ -13,9 +13,26 @@ export default class BookTable extends Component {
         }
 
         this.orderBook = (isbn, q) => {
-            const book = this.state.fullBooks.find( b => b.isbn === isbn )
+            const book = this.state.fullBooks.find(b => b.isbn === isbn)
             if (book) {
-                this.props.orderItem({...book, quantity: q})
+                this.props.orderItem({ ...book, quantity: q })
+            }
+        }
+
+        this.renderHeading = () => {
+            switch (this.props.user.role) {
+                case "ROLE_USER": return (
+                    <>
+                        <th className='smallHeading'>Cart</th>
+                        <th className='smallHeading'>Quantity</th>
+                    </>
+                )
+                case "ROLE_MANAGER": return (
+                    <>
+                        <th className='smallHeading'></th>
+                        <th className='smallHeading'></th>
+                    </>
+                )
             }
         }
     }
@@ -40,7 +57,7 @@ export default class BookTable extends Component {
                 genre: "Genre " + i,
                 publishYear: i,
                 publisher: "Publisher " + i,
-                price: 100*i
+                price: 100 * i
             })
         }
 
@@ -60,12 +77,14 @@ export default class BookTable extends Component {
                             <th>ISBN</th>
                             <th>Title</th>
                             <th>Authors</th>
-                            <th className='smallHeading'>Cart</th>
-                            <th className='smallHeading'>Quantity</th>
+                            {this.renderHeading()}
                         </tr>
                     </thead>
                     <tbody>
-                        {booksToDisplay.map(b => <BriefBook key={b.isbn} book={b} orderItem={this.orderBook}/>)}
+                        {booksToDisplay.map(b => <BriefBook key={b.isbn}
+                            book={b}
+                            userRole={this.props.user.role}
+                            orderItem={this.orderBook} />)}
                     </tbody>
                 </table>
                 <div id="bookOptions">
