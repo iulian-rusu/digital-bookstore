@@ -12,8 +12,8 @@ export default class LoginPage extends Component {
             errorMessage: ""
         }
 
-        this.usernamePattern = /[a-zA-Z_]\w+/
-        this.passwordPattern = /.{4,}/
+        this.usernamePattern = /^[a-zA-Z_]\w+$/
+        this.passwordPattern = /^.{4,}$/
 
         this.onUsernameChange = event => {
             this.setState({ username: event.target.value })
@@ -24,11 +24,11 @@ export default class LoginPage extends Component {
         }
 
         this.validateData = () => {
-            if (!this.usernamePattern.test(this.state.username)) {
+            if (!this.state.username.match(this.usernamePattern)) {
                 this.setState({ errorMessage: "Invalid username format" })
                 return false
             }
-            if (!this.passwordPattern.test(this.state.password)) {
+            if (!this.state.password.match(this.passwordPattern)) {
                 this.setState({ errorMessage: "Invalid password format" })
                 return false
             }
@@ -54,7 +54,7 @@ export default class LoginPage extends Component {
                     <input type="password" placeholder="password" autoComplete="off"
                         onChange={this.onPasswordChange} required />
                     <br />
-                    <button className="formButton" onClick={this.onLogIn}>Log In</button>
+                    <button className="darkButton" onClick={this.onLogIn}>Log In</button>
                 </form>
                 {this.state.errorMessage ? <h1>{this.state.errorMessage}</h1> : null}
             </div>

@@ -4,26 +4,21 @@
     align-self: center;
 }
 
+#loginForm {
+    margin-top: 20vh;
+    display: flex;
+    flex-direction: column;
+}
+
 #loginForm>* {
     margin: 5px;
     align-self: center;
     width: 200px;
     height: 30px;
+    font-size: 100%;
 }
 
-#loginForm {
-    display: flex;
-    flex-direction: column;
-}
-
-.formButton {
-    background-color: var(--dark-color);
-    color: var(--accent-color);
-    border: none;
-    border-radius: 2px;
-}
-
-.formButton:hover {
-    background-color: var(--darker-color);
-    color: var(--bright-accent-color);
+#loginForm>button {
+    font-size: 125%;
+    height: 40px;
 }

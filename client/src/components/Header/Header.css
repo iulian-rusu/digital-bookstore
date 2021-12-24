@@ -4,41 +4,32 @@
     align-items: center;
     justify-content: center;
     padding: 10px;
-    font-size: 300%;
     text-align: center;
     color: var(--accent-color);
     background-color: var(--dark-color);
 }
 
 #logoName {
+    font-size: 300%;
     display: flex;
     flex-direction: row;
     align-self: flex-start;
 }
 
-.menu {
-    top: 0px;
+#menu {
+    top: 20px;
     position: absolute;
     align-self: flex-end;
     text-align: center;
 }
 
-#logOutButton {
-    margin: 10px;
-    width: 200px;
-    height: 50px;
-    background-color: var(--accent-color);
-    color: var(--dark-color);
-    border: none;
-    border-radius: 2px;
-}
-#logOutButton:hover {
-    color: var(--darker-color);
-    background-color: var(--bright-accent-color);
+#menu>button {
+    width: 150px;
 }
 
-@media screen and (max-width: 900px) {
-    .menu {
+@media screen and (max-width: 1000px) {
+    #menu {
+        top: 0;
         position: relative;
         margin-bottom: 5px;
         align-self: center;
