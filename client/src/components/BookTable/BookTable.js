@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import Book from '../Book/Book'
+import BriefBook from '../Book/BriefBook'
 import './BookTable.css'
 
 export default class BookTable extends Component {
@@ -7,41 +7,65 @@ export default class BookTable extends Component {
         super(props)
 
         this.state = {
-            books: [],
+            briefBooks: [],
+            fullBooks: [],
             page: 1
+        }
+
+        this.orderBook = (isbn, q) => {
+            const book = this.state.fullBooks.find( b => b.isbn === isbn )
+            if (book) {
+                this.props.orderItem({...book, quantity: q})
+            }
         }
     }
 
     componentDidMount() {
         // fetch books from API
+        let mockBriefBooks = []
+        for (let i = 0; i < 9; ++i) {
+            mockBriefBooks.push({
+                isbn: "1111-1111-11" + i,
+                title: "Book " + i,
+                authors: "Author " + i + ", Author " + 2 * i
+            })
+        }
+
         let mockBooks = []
         for (let i = 0; i < 9; ++i) {
             mockBooks.push({
                 isbn: "1111-1111-11" + i,
                 title: "Book " + i,
-                authors: "Author 1, Author 2, Author 3"
+                authors: "Author 1, Author 2, Author 3",
+                genre: "Genre " + i,
+                publishYear: i,
+                publisher: "Publisher " + i,
+                price: 100*i
             })
         }
 
         this.setState({
-            books: mockBooks
+            briefBooks: mockBriefBooks,
+            fullBooks: mockBooks
         })
     }
 
     render() {
+        const booksToDisplay = this.state.briefBooks.filter(b => b.authors.includes(this.props.authorFilter))
         return (
-            <div className='BookTable'>
-                <table id='books'>
+            <div className='BookTable flexColumn'>
+                <table id='books' className='styledTable'>
                     <thead>
                         <tr>
                             <th>ISBN</th>
                             <th>Title</th>
                             <th>Authors</th>
-                            <th></th>
+                            <th className='smallHeading'>Cart</th>
+                            <th className='smallHeading'>Quantity</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {this.state.books.map(b => <Book key={b.isbn} book={b} />)}
+                        {booksToDisplay.map(b => <BriefBook key={b.isbn} book={b} orderItem={this.orderBook}/>)}
                     </tbody>
                 </table>
                 <div id="bookOptions">

@@ -1,24 +1,49 @@
 import React, { Component } from 'react'
-import './App.css';
 import Header from '../Header/Header';
 import LoginPage from '../LoginPage/LoginPage';
 import BooksPage from '../BooksPage/BooksPage';
+import CartPage from '../CartPage/CartPage';
+import ProfilePage from '../ProfilePage/ProfilePage';
 
 export default class App extends Component {
     constructor(props) {
         super(props)
 
         this.state = {
-            token: "",
+            user: null,
+            currentOrder: [],
             currentPage: "books"
         }
 
-        this.setToken = tk => {
-            if (!tk) {
+        this.setUser = u => {
+            if (!u || !u.token) {
                 this.state.currentPage = "books"
             }
-    
-            this.setState({ token: tk })
+
+            this.setState({ user: u })
+        }
+
+        this.orderItem = book => {
+            const existing = this.state.currentOrder.find(b => b.isbn === book.isbn)
+            if (existing) {
+                existing.quantity = book.quantity
+                this.setState({ currentOrder: this.state.currentOrder })
+                return
+            }
+
+            const orderedItem = {
+                isbn: book.isbn,
+                title: book.title,
+                quantity: book.quantity,
+                price: book.price
+            }
+            this.setState({ currentOrder: [...this.state.currentOrder, orderedItem] })
+        }
+
+        this.removeOrderedItem = isbn => {
+            console.log(isbn)
+            const remaining = this.state.currentOrder.filter(b => b.isbn !== isbn)
+            this.setState({ currentOrder: remaining })
         }
 
         this.setCurrentPage = page => {
@@ -26,25 +51,28 @@ export default class App extends Component {
         }
 
         this.getCurrentPage = () => {
-            const currentPage = this.state.currentPage
+            if (!this.state.user) {
+                return <LoginPage setUser={this.setUser} />
+            }
 
-            if (!this.state.token) {
-                return <LoginPage setToken={this.setToken} />
+            const currentPage = this.state.currentPage
+            switch (currentPage) {
+                case "books": return <BooksPage user={this.state.user} orderItem={this.orderItem} />
+                case "profile": return  <ProfilePage user={this.state.user} />
+                case "cart": return <CartPage
+                    user={this.state.user}
+                    currentOrder={this.state.currentOrder}
+                    removeOrderedItem={this.removeOrderedItem}
+                />
+                default: return <div>Unknown Page</div>
             }
-            else if (currentPage === "books") {
-                return <BooksPage token={this.state.token} />
-            }
-            else if (currentPage === "profile") {
-                return <div>Profile</div>
-            }
-            return <div>Unknown Page</div>
         }
     }
 
     render() {
         return (
-            <div className="App">
-                <Header token={this.state.token} setToken={this.setToken} setCurrentPage={this.setCurrentPage} />
+            <div className="App flexColumn">
+                <Header user={this.state.user} setUser={this.setUser} setCurrentPage={this.setCurrentPage} />
                 {this.getCurrentPage()}
             </div>
         )

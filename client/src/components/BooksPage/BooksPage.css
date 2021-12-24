@@ -1,11 +1,5 @@
 .BooksPage {
     padding: 20px;
-    display: flex;
-    flex-direction: column;
-}
-
-.BooksPage>* {
-    align-self: center;
 }
 
 #searchDiv {

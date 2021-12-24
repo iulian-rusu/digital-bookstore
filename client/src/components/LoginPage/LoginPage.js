@@ -36,24 +36,26 @@ export default class LoginPage extends Component {
         }
         this.onLogIn = event => {
             if (this.validateData()) {
-                this.props.setToken("TODO: add jwt")
+                this.props.setUser({
+                    token: "TODO",
+                    username: this.state.username,
+                    role: "ROLE_USER"
+                })
             }
             event.preventDefault()
             return false
         }
     }
 
-
     render() {
         return (
             <div className='LoginPage'>
+                <h3 id="loginMessage">Please enter your username and password</h3>
                 <form id="loginForm">
                     <input type="text" placeholder="username" autoComplete="off"
                         onChange={this.onUsernameChange} required />
-                    <br />
                     <input type="password" placeholder="password" autoComplete="off"
                         onChange={this.onPasswordChange} required />
-                    <br />
                     <button className="darkButton" onClick={this.onLogIn}>Log In</button>
                 </form>
                 {this.state.errorMessage ? <h1>{this.state.errorMessage}</h1> : null}

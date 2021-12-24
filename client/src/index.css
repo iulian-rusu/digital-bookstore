@@ -16,6 +16,20 @@ body {
     font-family: sans-serif;
 }
 
+.flexColumn {
+    display: flex;
+    flex-direction: column;
+}
+
+.flexRow {
+    display: flex;
+    flex-direction: row;
+}
+
+.alignCenter {
+    align-items: center;
+}
+
 .brightButton {
     font-size: 100%;
     font-weight: bolder;
@@ -48,4 +62,40 @@ body {
 .darkButton:hover {
     background-color: var(--darker-color);
     color: var(--bright-accent-color);
+}
+
+.styledTable thead tr {
+    font-weight: bolder;
+    font-size: 150%;
+    border-bottom: 3px solid var(--dark-color);
+}
+
+.styledTable tbody tr {
+    box-shadow: 0 8px 2px -8px var(--dark-color);
+}
+
+.styledTable tbody tr:hover {
+    box-shadow: 0px 8px 4px -8px var(--accent-color);
+}
+
+.styledTable thead th {
+    width: 250px;
+}
+
+.styledTable thead th.smallHeading {
+    width: 120px;
+}
+
+.styledTable tbody button {
+    width: 100px;
+    height: 35px;
+}
+
+.styledTable * {
+    text-align: center;
+}
+
+.styledTable {
+    margin: auto;
+    border-collapse: collapse;
 }

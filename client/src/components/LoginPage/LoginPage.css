@@ -4,8 +4,13 @@
     align-self: center;
 }
 
-#loginForm {
+#loginMessage {
     margin-top: 20vh;
+    color: var(--dark-color);
+    font-size: 150%;
+}
+
+#loginForm {
     display: flex;
     flex-direction: column;
 }
