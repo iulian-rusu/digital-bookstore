@@ -1,0 +1,9 @@
+.HomePage {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+#welcomeMessage {
+    align-self: center;
+}

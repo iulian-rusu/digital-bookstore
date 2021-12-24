@@ -1,5 +1,17 @@
+:root {
+    --dark-color: #242333;
+    --darker-color: #15141f;
+    --light-color: #ffffff;
+    --accent-color: #01b0d3;
+    --bright-accent-color: #3adeff;
+}
+
+* {
+    font-family: 'Mukta', sans-serif;
+}
 body {
-  margin: 0;
-  padding: 0;
-  font-family: sans-serif;
+
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
 }
