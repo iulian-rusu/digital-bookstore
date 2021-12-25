@@ -8,8 +8,11 @@ export default class HomePage extends Component {
         super(props)
 
         this.state = {
-            authorFilter: "",
-            searchField: ""
+            searchField: "",
+            filter: {
+                field: "authors",
+                value: ""
+            }
         }
 
         this.setSearchField = e => {
@@ -18,16 +21,31 @@ export default class HomePage extends Component {
             })
         }
 
-        this.setAuthorFilter = () => {
+        this.setFilter = () => {
             this.setState({
-                authorFilter: this.state.searchField
+                filter: {
+                    field: this.state.filter.field,
+                    value: this.state.searchField
+                },
             })
         }
 
-        this.clearAuthorFilter = () => {
+        this.clearFilter = () => {
             this.setState({
-                authorFilter: "",
+                filter: {
+                    field: this.state.filter.field,
+                    value: ""
+                },
                 searchField: ""
+            })
+        }
+
+        this.setField = event => {
+            this.setState({
+                filter: {
+                    field: event.target.value,
+                    value: this.state.filter.value
+                }
             })
         }
     }
@@ -35,18 +53,22 @@ export default class HomePage extends Component {
         return (
             <div className='BooksPage flexColumn alignCenter'>
                 <div id='searchDiv'>
+                    <select id="filterType" onChange={this.setField}>
+                        <option>authors</option>
+                        <option>title</option>
+                    </select>
                     <input type='text'
                         id='searchInput'
-                        placeholder='search author ...'
+                        placeholder={'search ' + this.state.filter.field}
                         onChange={this.setSearchField}
                         value={this.state.searchField} />
-                    <button class='brightButton' id='searchButton' onClick={this.setAuthorFilter}>Search</button>
-                    <button class='brightButton' id='searchButton' onClick={this.clearAuthorFilter}>Clear</button>
+                    <button className='brightButton' id='searchButton' onClick={this.setFilter}>Search</button>
+                    <button className='brightButton' id='searchButton' onClick={this.clearFilter}>Clear</button>
                 </div>
                 <BookTable
                     user={this.props.user}
                     orderItem={this.props.orderItem}
-                    authorFilter={this.state.authorFilter}
+                    filter={this.state.filter}
                 />
             </div>
         )

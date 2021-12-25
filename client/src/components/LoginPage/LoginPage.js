@@ -50,7 +50,7 @@ export default class LoginPage extends Component {
     render() {
         return (
             <div className='LoginPage flexColumn alignCenter'>
-                <h3 id="loginMessage">Please enter your username and password</h3>
+                <h3 id="loginMessage">Please log in to your account</h3>
                 <form id="loginForm">
                     <input type="text" placeholder="username" autoComplete="off"
                         onChange={this.onUsernameChange} required />

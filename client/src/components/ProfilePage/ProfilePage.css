@@ -1,3 +1,20 @@
 #greetingMessage {
     margin-top: 10vh;
 }
+
+#profileForm > fieldset {
+    padding: 20px;
+}
+
+#profileForm > fieldset > div {
+    align-items: center;
+    width: 400px;
+    margin: 5px;
+}
+
+#profileForm > fieldset > div input {
+    float: right;
+    clear: both;
+    margin-right: 10px;
+    width: 230px;
+}

@@ -68,7 +68,7 @@ export default class BookTable extends Component {
     }
 
     render() {
-        const booksToDisplay = this.state.briefBooks.filter(b => b.authors.includes(this.props.authorFilter))
+        const booksToDisplay = this.state.briefBooks.filter(b => b[this.props.filter.field].includes(this.props.filter.value))
         return (
             <div className='BookTable flexColumn'>
                 <table id='books' className='styledTable'>
