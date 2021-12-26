@@ -7,16 +7,8 @@ export default class BookTable extends Component {
         super(props)
 
         this.state = {
-            briefBooks: [],
-            fullBooks: [],
-            page: 1
-        }
-
-        this.orderBook = (isbn, q) => {
-            const book = this.state.fullBooks.find(b => b.isbn === isbn)
-            if (book) {
-                this.props.orderItem({ ...book, quantity: q })
-            }
+            page: 1,
+            detailedViewIsbn: null
         }
 
         this.renderHeading = () => {
@@ -30,45 +22,14 @@ export default class BookTable extends Component {
                 case "ROLE_MANAGER": return (
                     <>
                         <th className='smallHeading'></th>
-                        <th className='smallHeading'></th>
                     </>
                 )
             }
         }
     }
 
-    componentDidMount() {
-        // fetch books from API
-        let mockBriefBooks = []
-        for (let i = 0; i < 9; ++i) {
-            mockBriefBooks.push({
-                isbn: "1111-1111-11" + i,
-                title: "Book " + i,
-                authors: "Author " + i + ", Author " + 2 * i
-            })
-        }
-
-        let mockBooks = []
-        for (let i = 0; i < 9; ++i) {
-            mockBooks.push({
-                isbn: "1111-1111-11" + i,
-                title: "Book " + i,
-                authors: "Author 1, Author 2, Author 3",
-                genre: "Genre " + i,
-                publishYear: i,
-                publisher: "Publisher " + i,
-                price: 100 * i
-            })
-        }
-
-        this.setState({
-            briefBooks: mockBriefBooks,
-            fullBooks: mockBooks
-        })
-    }
-
     render() {
-        const booksToDisplay = this.state.briefBooks.filter(b => b[this.props.filter.field].includes(this.props.filter.value))
+        const booksToDisplay = this.props.briefBooks.filter(b => b[this.props.filter.field].includes(this.props.filter.value))
         return (
             <div className='BookTable flexColumn'>
                 <table id='books' className='styledTable'>
@@ -81,10 +42,14 @@ export default class BookTable extends Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {booksToDisplay.map(b => <BriefBook key={b.isbn}
-                            book={b}
-                            userRole={this.props.user.role}
-                            orderItem={this.orderBook} />)}
+                        {
+                            booksToDisplay.map(b => <BriefBook key={b.isbn}
+                                book={b}
+                                userRole={this.props.user.role}
+                                orderItem={this.props.orderItem}
+                                removeItem={this.props.removeItem}
+                                openDetails={this.props.openBookDetails} />)
+                        }
                     </tbody>
                 </table>
                 <div id="bookOptions">

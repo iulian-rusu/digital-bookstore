@@ -5,3 +5,12 @@
 .bookTableButton {
     width: 70px;
 }
+
+.bookIsbn a {
+    text-decoration: none;
+    color: black;
+}
+
+.bookIsbn a:hover {
+    color: var(--accent-color);
+}

@@ -1,18 +1,14 @@
-#greetingMessage {
-    margin-top: 10vh;
-}
-
-#profileForm > fieldset {
+#bookViewForm > fieldset {
     padding: 20px;
 }
 
-#profileForm > fieldset > div {
+#bookViewForm > fieldset > div {
     align-items: center;
     width: 400px;
     margin: 5px;
 }
 
-#profileForm > fieldset > div input {
+#bookViewForm > fieldset > div input {
     float: right;
     clear: both;
     margin-right: 10px;

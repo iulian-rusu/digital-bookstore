@@ -19,6 +19,14 @@ export default class BriefBook extends Component {
             this.props.orderItem(this.props.book.isbn, this.state.quantity)
         }
 
+        this.openSelfDetails = () => {
+            this.props.openDetails(this.props.book.isbn)
+        }
+
+        this.removeSelf = () => {
+            this.props.removeItem(this.props.book.isbn)
+        }
+
         this.renderButtons = () => {
             switch (this.props.userRole) {
                 case "ROLE_USER": return (
@@ -30,10 +38,7 @@ export default class BriefBook extends Component {
                     </>
                 )
                 case "ROLE_MANAGER": return (
-                    <>
-                        <td><button className='darkButton bookTableButton' >Edit</button></td>
-                        <td><button className='darkButton bookTableButton' >Remove</button></td>
-                    </>
+                    <td><button className='darkButton bookTableButton' onClick={this.removeSelf}>Remove</button></td>
                 )
             }
         }
@@ -42,7 +47,7 @@ export default class BriefBook extends Component {
     render() {
         return (
             <tr>
-                <td>{this.props.book.isbn}</td>
+                <td className="bookIsbn" onClick={this.openSelfDetails}><a href="#">{this.props.book.isbn}</a></td>
                 <td>{this.props.book.title}</td>
                 <td>{this.props.book.authors}</td>
                 {this.renderButtons()}

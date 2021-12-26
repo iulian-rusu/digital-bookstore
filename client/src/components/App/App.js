@@ -41,7 +41,6 @@ export default class App extends Component {
         }
 
         this.removeOrderedItem = isbn => {
-            console.log(isbn)
             const remaining = this.state.currentOrder.filter(b => b.isbn !== isbn)
             this.setState({ currentOrder: remaining })
         }

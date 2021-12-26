@@ -57,7 +57,7 @@ export default class ProfilePage extends Component {
                             <input type="password" name="passwordConfirm" onChange={this.setConfirmPassword}/>
                         </div>
                     </fieldset>
-                    <div id="formButtons">
+                    <div>
                         <input type="submit" className='darkButton' value="Update" />
                     </div>
                 </form>
