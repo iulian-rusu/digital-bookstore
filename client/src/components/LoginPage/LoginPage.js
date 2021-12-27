@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import './LoginPage.css'
+import {postAuth, extractAuthData} from '../../modules/SOAPRequest'
 
 export default class LoginPage extends Component {
 
@@ -35,15 +36,23 @@ export default class LoginPage extends Component {
             return true
         }
         this.onLogIn = event => {
+            event.preventDefault()
+
             if (this.validateData()) {
+                const response = postAuth(this.state.username, this.state.password)
+                if (!response.ok) {
+                    this.setState({ errorMessage: "Cannot authenticate" })
+                    return
+                }
+
+                const userData = extractAuthData(response)
                 this.props.setUser({
-                    token: "TODO",
+                    token: userData.token,
+                    userId: userData.userId,
                     username: this.state.username,
-                    role: this.state.username === "www" ? "ROLE_MANAGER" : "ROLE_USER"
+                    role: userData.role
                 })
             }
-            event.preventDefault()
-            return false
         }
     }
 

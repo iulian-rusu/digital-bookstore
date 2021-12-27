@@ -32,6 +32,8 @@ class UserManagementService : GuardedSoapScope(UserManagementService::class.java
             if (Encoder.matches(request.password, databaseHash)) {
                 val savedUser = userRepository.findOne(request.username)
                 response.token = jwtProvider.createToken(savedUser)
+                response.sub = savedUser.userId
+                response.role = savedUser.role
             } else {
                 logger.warn("Invalid password attempt for username=${request.username}")
                 throw PasswordAuthenticationException()
@@ -49,6 +51,8 @@ class UserManagementService : GuardedSoapScope(UserManagementService::class.java
 
             val savedUser = userRepository.save(request)
             response.token = jwtProvider.createToken(savedUser)
+            response.sub = savedUser.userId
+            response.role = savedUser.role
         }
         return response
     }

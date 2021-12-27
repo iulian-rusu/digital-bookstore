@@ -4,12 +4,15 @@ import com.pos.identity.*
 import com.pos.identity.business.services.interfaces.JwtManagementInterface
 import com.pos.identity.business.services.interfaces.UserManagementInterface
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.ws.server.endpoint.annotation.Endpoint
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot
 import org.springframework.ws.server.endpoint.annotation.RequestPayload
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload
 
+
 @Endpoint
+@CrossOrigin(origins = ["http://localhost:3000"])
 class IdentityManagementEndpoint {
     companion object {
         const val NAMESPACE_URL = "http://identity.pos.com"

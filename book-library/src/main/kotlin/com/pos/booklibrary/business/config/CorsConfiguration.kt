@@ -18,12 +18,12 @@ class CorsConfiguration : WebMvcConfigurer {
 
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.apply {
-            register("/books", CLIENT_ORIGIN, "POST")
+            register("/books", CLIENT_ORIGIN, "POST", "GET")
             register("/books/*", CLIENT_ORIGIN, "GET", "PUT", "DELETE")
-            register("/books/*/authors", CLIENT_ORIGIN, "POST")
+            register("/books/*/authors", CLIENT_ORIGIN, "POST", "GET")
             register("/books/*/authors/*", CLIENT_ORIGIN, "GET", "DELETE")
 
-            register("/authors", CLIENT_ORIGIN, "POST")
+            register("/authors", CLIENT_ORIGIN, "POST", "GET")
             register("/authors/*", CLIENT_ORIGIN, "GET", "PUT", "DELETE")
         }
     }

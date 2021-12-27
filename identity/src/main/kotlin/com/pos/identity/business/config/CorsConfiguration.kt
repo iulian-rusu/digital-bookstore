@@ -8,9 +8,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 @Configuration
 @EnableWebMvc
-class IdentityCorsConfiguration : WebMvcConfigurer {
+class CorsConfiguration : WebMvcConfigurer {
     companion object {
-        private const val IDENTITY_PATH = "/api"
+        private const val IDENTITY_PATH = "/*"
         private val CLIENT_HOST = System.getenv("CLIENT_HOST") ?: "localhost"
         private val CLIENT_PORT = System.getenv("CLIENT_PORT") ?: "3000"
         private val CLIENT_ORIGIN = "http://$CLIENT_HOST:$CLIENT_PORT"
@@ -18,7 +18,7 @@ class IdentityCorsConfiguration : WebMvcConfigurer {
 
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.apply {
-            register("", CLIENT_ORIGIN, "POST", "OPTIONS")
+            register("*", CLIENT_ORIGIN, "POST")
         }
     }
 
