@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
-import Order from '../Order/Order'
+import CartOrderEntry from '../CartOrderEntry/CartOrderEntry'
 
-export default class OrderTable extends Component {
+export default class CartOrder extends Component {
     constructor(props) {
         super(props)
 
@@ -12,7 +12,7 @@ export default class OrderTable extends Component {
 
     render() {
         return (
-            <div className='OrderTable flexColumn'>
+            <div className='CartOrder flexColumn'>
                 <table id='orders' className='styledTable'>
                     <thead>
                         <tr>
@@ -25,7 +25,7 @@ export default class OrderTable extends Component {
                     </thead>
                     <tbody>
                         {this.props.currentOrder.map(
-                            i => <Order key={i.isbn} item={i} removeSelf={this.props.removeOrderedItem} />
+                            i => <CartOrderEntry key={i.isbn} item={i} removeSelf={this.props.removeOrderedItem} />
                         )}
                     </tbody>
                 </table>

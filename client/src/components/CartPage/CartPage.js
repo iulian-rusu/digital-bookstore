@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import OrderTable from '../OrderTable/OrderTable'
+import CartOrder from '../CartOrder/CartOrder'
 import './CartPage.css'
 
 export default class CartPage extends Component {
@@ -13,7 +13,7 @@ export default class CartPage extends Component {
                 <div id="cartOptions">
                     <button className='brightButton' onClick={this.finalizeOrder}>Finalize Order</button>
                 </div>
-                <OrderTable currentOrder={this.props.currentOrder} removeOrderedItem={this.props.removeOrderedItem} />
+                <CartOrder currentOrder={this.props.currentOrder} removeOrderedItem={this.props.removeOrderedItem} />
             </div>
         )
     }

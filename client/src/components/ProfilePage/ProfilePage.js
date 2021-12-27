@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import PastOrdersList from '../PastOrdersList/PastOrdersList'
 import './ProfilePage.css'
 
 export default class ProfilePage extends Component {
@@ -11,7 +12,7 @@ export default class ProfilePage extends Component {
         }
 
         this.renderRole = () => {
-            switch(this.props.user.role) {
+            switch (this.props.user.role) {
                 case "ROLE_USER": return "User"
                 case "ROLE_MANAGER": return "Manager"
                 case "ROLE_ADMIN": return "Admin"
@@ -39,7 +40,7 @@ export default class ProfilePage extends Component {
                 <h1 id="greetingMessage">Welcome, {this.props.user.username}</h1>
                 <form id="profileForm" className="flexColumn alignCenter" onSubmit={this.submitForm}>
                     <fieldset className="flexColumn alignCenter">
-                    <legend>Personal Information</legend>
+                        <legend>Personal Information</legend>
                         <div>
                             <label>Username</label>
                             <input type="text" disabled value={this.props.user.username} />
@@ -54,13 +55,18 @@ export default class ProfilePage extends Component {
                         </div>
                         <div>
                             <label>Confirm Password</label>
-                            <input type="password" name="passwordConfirm" onChange={this.setConfirmPassword}/>
+                            <input type="password" name="passwordConfirm" onChange={this.setConfirmPassword} />
                         </div>
                     </fieldset>
                     <div>
                         <input type="submit" className='darkButton' value="Update" />
                     </div>
                 </form>
+                {
+                    (this.props.user.role == "ROLE_USER")
+                        ? <PastOrdersList user={this.props.user} />
+                        : null
+                }
             </div>
         )
     }
