@@ -25,13 +25,11 @@ export async function postAuth(username, password) {
         },
         body: requestBody
     }
-
     const response =  await fetch('http://localhost:8082/api', options)
     return response
 }
 
 export function extractAuthData(authResponse) {
-    console.log(authResponse)
     const parser = new DOMParser()
     const xml = parser.parseFromString(authResponse.text(), 'text/xml')
     const token = xml.getElementsByTagNameNS('ns2', 'token')[0].textContent

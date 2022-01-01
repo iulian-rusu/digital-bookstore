@@ -1,5 +1,6 @@
-package com.pos.identity.endpoints
+package com.pos.identity.business.config
 
+import com.pos.identity.endpoints.IdentityManagementEndpoint
 import org.springframework.boot.web.servlet.ServletRegistrationBean
 import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
@@ -14,7 +15,7 @@ import org.springframework.xml.xsd.XsdSchema
 
 @EnableWs
 @Configuration
-class WebServiceConfig : WsConfigurerAdapter() {
+class WebServiceConfiguration : WsConfigurerAdapter() {
     @Bean
     fun messageDispatcherServlet(applicationContext: ApplicationContext) =
         MessageDispatcherServlet().run {

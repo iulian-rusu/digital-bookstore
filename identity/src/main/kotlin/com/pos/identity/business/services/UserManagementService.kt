@@ -39,6 +39,7 @@ class UserManagementService : GuardedSoapScope(UserManagementService::class.java
                 throw PasswordAuthenticationException()
             }
         }
+        logger.info("Authenticated ${response.sub}")
         return response
     }
 

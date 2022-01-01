@@ -12,7 +12,7 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload
 
 
 @Endpoint
-@CrossOrigin(origins = ["http://localhost:3000"])
+@CrossOrigin
 class IdentityManagementEndpoint {
     companion object {
         const val NAMESPACE_URL = "http://identity.pos.com"
