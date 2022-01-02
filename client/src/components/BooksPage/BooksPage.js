@@ -9,8 +9,8 @@ export default class BooksPage extends Component {
         super(props)
 
         this.state = {
-            briefBooks: [],
-            detailedBooks: [],
+            page: 1,
+            books: [],
             searchField: "",
             filter: {
                 field: "authors",
@@ -58,25 +58,96 @@ export default class BooksPage extends Component {
             })
         }
 
-        this.removeBook = isbn => {
-            // call DELETE method to remove book
+        this.removeBook = async isbn => {
+            const uri = `http://localhost:8080/api/book-library/books/${isbn}`
+            const answer = await fetch(uri, {
+                method: 'delete',
+                headers: {
+                    'Authorization': `Bearer ${this.props.user.token}`
+                }
+            })
+
+            if (answer.status != 204) {
+                return
+            }
             this.setState({
-                briefBooks: this.state.briefBooks.filter(b => b.isbn !== isbn)
+                books: this.state.books.filter(b => b.isbn !== isbn)
             })
         }
 
         this.orderBook = (isbn, q) => {
-            const book = this.state.detailedBooks.find(b => b.isbn === isbn)
+            const book = this.state.books.find(b => b.isbn === isbn)
             if (book) {
                 this.props.orderItem({ ...book, quantity: q })
             }
         }
 
+
+        this.setPage = async newPage => {
+            if (newPage > 0) {
+                this.state.page = newPage
+                await this.loadPage()
+            }
+        }
+
+        this.loadPage = async () => {
+            const uri = `http://localhost:8080/api/book-library/books?page=${this.state.page}`
+            const answer = await fetch(uri)
+            if (answer.status != 200) {
+                this.setState({
+                    books: []
+                })
+                return
+            }
+
+            const responseData = await answer.json()
+            if (responseData["_embedded"] === undefined) {
+                this.setState({
+                    books: []
+                })
+                return
+            }
+                
+            const bookList = responseData['_embedded']['bookList']
+
+            for(let i = 0; i < bookList.length; ++i) {
+                let book = bookList[i]
+                const uri = `http://localhost:8080/api/book-library/books/${book.isbn}/authors`
+                const answer = await fetch(uri)
+                if (answer.status != 200) {
+                    continue
+                }
+                const responseData = await answer.json()
+                if (responseData["_embedded"] === undefined) {
+                    book["authors"] = ""
+                    continue
+                }
+
+                const authors = responseData['_embedded']['bookAuthorList']
+                let authorString = ""
+                for(let j = 0; j < authors.length; ++j) {
+                    const uri = `http://localhost:8080/api/book-library/authors/${authors[j].authorId}`
+                    const answer = await fetch(uri)
+                    if (answer.status != 200) {
+                        continue
+                    }
+                    const responseData = await answer.json()
+                    authorString += responseData.firstName + " " + responseData.lastName + "; "
+                }
+                book["authors"] = authorString
+            }
+            console.log(bookList)
+            this.setState({
+                books: bookList,
+            })
+        }
+
         this.renderPage = () => {
             if (this.state.detailedViewIsbn) {
+                const book = this.state.books.filter(b => b.isbn == this.state.detailedViewIsbn)[0]
                 return (
                     <>
-                        <DetailedBook isbn={this.state.detailedViewIsbn} userRole={this.props.user.role} />
+                        <DetailedBook book={book} userRole={this.props.user.role} user={this.props.user}/>
                         <button className="brightButton" onClick={() => this.setState({
                             detailedViewIsbn: null
                         })}>Back</button>
@@ -99,7 +170,9 @@ export default class BooksPage extends Component {
                         <button className='brightButton' id='searchButton' onClick={this.clearFilter}>Clear</button>
                     </div>
                     <BookTable
-                        briefBooks={this.state.briefBooks}
+                        page={this.state.page}
+                        setPage={this.setPage}
+                        books={this.state.books}
                         openBookDetails={this.openBookDetails}
                         user={this.props.user}
                         orderItem={this.orderBook}
@@ -111,40 +184,11 @@ export default class BooksPage extends Component {
         }
     }
 
-    componentDidMount() {
-        // fetch books from API
-        let mockBriefBooks = []
-        for (let i = 0; i < 9; ++i) {
-            mockBriefBooks.push({
-                isbn: "1111-1111-11" + i,
-                title: "Book " + i,
-                authors: "Author " + i + ", Author " + 2 * i
-            })
-        }
-
-        let mockBooks = []
-        for (let i = 0; i < 9; ++i) {
-            mockBooks.push({
-                isbn: "1111-1111-11" + i,
-                title: "Book " + i,
-                authors: "Author 1, Author 2, Author 3",
-                genre: "Genre " + i,
-                publishYear: i,
-                publisher: "Publisher " + i,
-                price: 100 * i,
-                stock: 33 * i + 1
-            })
-        }
-
-        this.setState({
-            briefBooks: mockBriefBooks,
-            detailedBooks: mockBooks
-        })
+    async componentDidMount() {
+        await this.loadPage()
     }
 
     render() {
-
-
         return (
             <div className='BooksPage flexColumn alignCenter'>
                 {this.renderPage()}

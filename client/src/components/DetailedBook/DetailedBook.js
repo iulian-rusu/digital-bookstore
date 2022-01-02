@@ -5,19 +5,23 @@ export default class DetailedBook extends Component {
     constructor(props) {
         super(props)
 
-        this.state = {
-            isbn: "1111-1111-543",
-            title: "Book ",
-            authors: "Author 1, Author 2, Author 3",
-            genre: "Genre ",
-            publishYear: 353242,
-            publisher: "Publisher ",
-            price: 4242,
-            stock: 42
-        }
-        this.submitForm = event => {
+        this.state =  this.props.book
+
+        this.submitForm = async event => {
             event.preventDefault()
-            // call API to update book
+            const uri = `http://localhost:8080/api/book-library/books/${this.state.isbn}`
+            const answer = await fetch(uri, {
+                method: 'put',
+                headers: {
+                    'Authorization': `Bearer ${this.props.user.token}`,
+                    'Content-type': 'application/json'
+                },
+                body: JSON.stringify(this.state)
+            })
+
+            if (answer.status % 100 != 2) {
+                return
+            }
         }
 
         this.updateBook = field => event => {
@@ -42,7 +46,7 @@ export default class DetailedBook extends Component {
                         <div>
                             <label>ISBN</label>
                             <input onChange={this.updateBook('isbn')}
-                                type="text" disabled={isDisabled} value={this.state.isbn} />
+                                type="text" disabled value={this.state.isbn} />
                         </div>
                         <div>
                             <label>Authors</label>

@@ -7,7 +7,6 @@ export default class BookTable extends Component {
         super(props)
 
         this.state = {
-            page: 1,
             detailedViewIsbn: null
         }
 
@@ -29,7 +28,7 @@ export default class BookTable extends Component {
     }
 
     render() {
-        const booksToDisplay = this.props.briefBooks.filter(b => b[this.props.filter.field].includes(this.props.filter.value))
+        const booksToDisplay = this.props.books.filter(b => b[this.props.filter.field].includes(this.props.filter.value))
         return (
             <div className='BookTable flexColumn'>
                 <table id='books' className='styledTable'>
@@ -53,9 +52,9 @@ export default class BookTable extends Component {
                     </tbody>
                 </table>
                 <div id="bookOptions">
-                    <button className='brightButton'>Previous</button>
-                    <h3>Page {this.state.page}</h3>
-                    <button className='brightButton'>Next</button>
+                    <button className='brightButton' onClick={() => this.props.setPage(this.props.page - 1)}>Previous</button>
+                    <h3>Page {this.props.page}</h3>
+                    <button className='brightButton' onClick={() => this.props.setPage(this.props.page + 1)}>Next</button>
                 </div>
             </div>
         )

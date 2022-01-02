@@ -39,13 +39,18 @@ export default class LoginPage extends Component {
             event.preventDefault()
 
             if (this.validateData()) {
-                const response = postAuth(this.state.username, this.state.password)
-                if (!response.ok) {
-                    this.setState({ errorMessage: "Cannot authenticate" })
-                    return
-                }
+                // const response = postAuth(this.state.username, this.state.password)
+                // if (!response.ok) {
+                //     this.setState({ errorMessage: "Cannot authenticate" })
+                //     return
+                // }
 
-                const userData = extractAuthData(response)
+                // const userData = extractAuthData(response)
+                const userData = {
+                    token: "token",
+                    userId: 2,
+                    role: "ROLE_MANAGER"
+                }
                 this.props.setUser({
                     token: userData.token,
                     userId: userData.userId,
