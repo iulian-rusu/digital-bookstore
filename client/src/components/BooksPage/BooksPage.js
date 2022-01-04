@@ -10,6 +10,7 @@ export default class BooksPage extends Component {
 
         this.state = {
             page: 1,
+            itemsPerPage: 4,
             books: [],
             searchField: "",
             filter: {
@@ -67,7 +68,8 @@ export default class BooksPage extends Component {
                 }
             })
 
-            if (answer.status != 204) {
+            if (answer.ok) {
+                console.log(answer.statusText)
                 return
             }
             this.setState({
@@ -84,6 +86,9 @@ export default class BooksPage extends Component {
 
 
         this.setPage = async newPage => {
+            if (newPage > this.state.page && this.state.books.length < this.state.itemsPerPage) {
+                return
+            }
             if (newPage > 0) {
                 this.state.page = newPage
                 await this.loadPage()
@@ -91,9 +96,9 @@ export default class BooksPage extends Component {
         }
 
         this.loadPage = async () => {
-            const uri = `http://localhost:8080/api/book-library/books?page=${this.state.page}`
+            const uri = `http://localhost:8080/api/book-library/books?page=${this.state.page}&items_per_page=${this.state.itemsPerPage}`
             const answer = await fetch(uri)
-            if (answer.status != 200) {
+            if (!answer.ok) {
                 this.setState({
                     books: []
                 })
@@ -114,7 +119,8 @@ export default class BooksPage extends Component {
                 let book = bookList[i]
                 const uri = `http://localhost:8080/api/book-library/books/${book.isbn}/authors`
                 const answer = await fetch(uri)
-                if (answer.status != 200) {
+                if (!answer.ok) {
+                    console.log(answer.statusText)
                     continue
                 }
                 const responseData = await answer.json()
@@ -128,7 +134,8 @@ export default class BooksPage extends Component {
                 for(let j = 0; j < authors.length; ++j) {
                     const uri = `http://localhost:8080/api/book-library/authors/${authors[j].authorId}`
                     const answer = await fetch(uri)
-                    if (answer.status != 200) {
+                    if (!answer.ok) {
+                        console.log(answer.statusText)
                         continue
                     }
                     const responseData = await answer.json()
@@ -136,7 +143,6 @@ export default class BooksPage extends Component {
                 }
                 book["authors"] = authorString
             }
-            console.log(bookList)
             this.setState({
                 books: bookList,
             })

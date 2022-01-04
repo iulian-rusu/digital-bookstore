@@ -10,7 +10,7 @@ export default class DetailedBook extends Component {
         this.submitForm = async event => {
             event.preventDefault()
             const uri = `http://localhost:8080/api/book-library/books/${this.state.isbn}`
-            const answer = await fetch(uri, {
+            const res = await fetch(uri, {
                 method: 'put',
                 headers: {
                     'Authorization': `Bearer ${this.props.user.token}`,
@@ -19,8 +19,8 @@ export default class DetailedBook extends Component {
                 body: JSON.stringify(this.state)
             })
 
-            if (answer.status % 100 != 2) {
-                return
+            if (!res.ok) {
+                console.log(res.statusText)
             }
         }
 

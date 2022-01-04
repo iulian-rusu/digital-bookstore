@@ -45,11 +45,11 @@ export default class LoginPage extends Component {
                 //     return
                 // }
 
-                // const userData = extractAuthData(response)
+                // const userData = extractUserData(response)
                 const userData = {
-                    token: "token",
+                    token: "...",
                     userId: 2,
-                    role: "ROLE_MANAGER"
+                    role: "ROLE_USER"
                 }
                 this.props.setUser({
                     token: userData.token,

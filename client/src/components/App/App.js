@@ -23,6 +23,10 @@ export default class App extends Component {
             this.setState({ user: u })
         }
 
+        this.updateUserToken = token => {
+            this.state.user.token = token
+        }
+
         this.orderItem = book => {
             const existing = this.state.currentOrder.find(b => b.isbn === book.isbn)
             if (existing) {
@@ -38,6 +42,12 @@ export default class App extends Component {
                 price: book.price
             }
             this.setState({ currentOrder: [...this.state.currentOrder, orderedItem] })
+        }
+
+        this.clearCurrentOrder = () => {
+            this.setState({
+                currentOrder: []
+            })
         }
 
         this.removeOrderedItem = isbn => {
@@ -57,11 +67,12 @@ export default class App extends Component {
             const currentPage = this.state.currentPage
             switch (currentPage) {
                 case "books": return <BooksPage user={this.state.user} orderItem={this.orderItem} />
-                case "profile": return  <ProfilePage user={this.state.user} />
+                case "profile": return  <ProfilePage user={this.state.user} updateUserToken={this.updateUserToken}/>
                 case "cart": return <CartPage
                     user={this.state.user}
                     currentOrder={this.state.currentOrder}
                     removeOrderedItem={this.removeOrderedItem}
+                    clearCurrentOrder={this.clearCurrentOrder}
                 />
                 default: return <div>Unknown Page</div>
             }

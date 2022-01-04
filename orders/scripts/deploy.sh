@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -axe
+set -ae
 . ../.env
 set +a
 

@@ -29,7 +29,28 @@ export async function postAuth(username, password) {
     return response
 }
 
-export function extractAuthData(authResponse) {
+export async function postUpdateUser(userId, newPassword, token) {
+    const updateRequest = `
+    <gs:userUpdateRequest>
+        <gs:token>${token}</gs:token>
+        <gs:userId>${userId}</gs:userId>
+        <gs:password>${newPassword}</gs:password>
+    </gs:userUpdateRequest>
+    `
+    const requestBody = wrap(authRequest)
+
+    const options = {
+        method: 'post',
+        headers: {
+            'Content-Type': 'text/xml'
+        },
+        body: requestBody
+    }
+    const response =  await fetch('http://localhost:8082/api', options)
+    return response
+}
+
+export function extractUserData(authResponse) {
     const parser = new DOMParser()
     const xml = parser.parseFromString(authResponse.text(), 'text/xml')
     const token = xml.getElementsByTagNameNS('ns2', 'token')[0].textContent

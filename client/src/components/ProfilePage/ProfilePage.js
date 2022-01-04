@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { postUpdateUser } from '../../modules/SOAPRequest'
 import PastOrdersList from '../PastOrdersList/PastOrdersList'
 import './ProfilePage.css'
 
@@ -8,7 +9,8 @@ export default class ProfilePage extends Component {
 
         this.state = {
             newPassword: "",
-            confirmPassword: ""
+            confirmPassword: "",
+            pastOrders: []
         }
 
         this.renderRole = () => {
@@ -28,9 +30,46 @@ export default class ProfilePage extends Component {
             this.state.confirmPassword = event.target.value
         }
 
-        this.submitForm = event => {
+        this.submitForm = async event => {
             event.preventDefault()
+            if (this.state.newPassword !== this.state.confirmPassword) {
+                this.setState({
+                    newPassword: "",
+                    confirmPassword: ""
+                })
+                return
+            }
             // send API request to update user
+            const response = postUpdateUser(this.state.user.userId, this.state.newPassword, this.state.user.token)
+            if (!response.ok) {
+                this.setState({ errorMessage: "Cannot authenticate" })
+                return
+            }
+
+            const newUserData = extractAuthData(response)
+        }
+    }
+
+    async componentDidMount() {
+        const uri = `http://localhost:8081/api/orders/client/${this.props.user.userId}`
+        const orderBody = {
+            items: this.props.currentOrder
+        }
+        const res = await fetch(uri, {
+            method: 'get',
+            headers: {
+                'Authorization': `Bearer ${this.props.user.token}`,
+            }
+        })
+        if (!res.ok) {
+            console.log(res.statusText)
+        }
+        const jsonData = await res.json()
+        const pastOrdersData = jsonData["_embedded"]["bookOrderList"]
+        if (pastOrdersData) {
+            this.setState({
+                pastOrders: pastOrdersData
+            })
         }
     }
 
@@ -64,7 +103,7 @@ export default class ProfilePage extends Component {
                 </form>
                 {
                     (this.props.user.role == "ROLE_USER")
-                        ? <PastOrdersList user={this.props.user} />
+                        ? <PastOrdersList user={this.props.user} pastOrders={this.state.pastOrders}/>
                         : null
                 }
             </div>
