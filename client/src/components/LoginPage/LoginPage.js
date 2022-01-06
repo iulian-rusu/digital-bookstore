@@ -1,6 +1,5 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 import './LoginPage.css'
-import {postAuth, extractAuthData} from '../../modules/SOAPRequest'
 
 export default class LoginPage extends Component {
 
@@ -35,22 +34,31 @@ export default class LoginPage extends Component {
             }
             return true
         }
-        this.onLogIn = event => {
+        this.onLogIn = async event => {
             event.preventDefault()
 
             if (this.validateData()) {
-                // const response = postAuth(this.state.username, this.state.password)
-                // if (!response.ok) {
-                //     this.setState({ errorMessage: "Cannot authenticate" })
-                //     return
-                // }
-
-                // const userData = extractUserData(response)
-                const userData = {
-                    token: "...",
-                    userId: 2,
-                    role: "ROLE_USER"
+                const uri = `http://localhost:8083/api/proxy/identity/auth`
+                const authData = {
+                    username: this.state.username,
+                    password: this.state.password
                 }
+
+                const response = await fetch(uri, {
+                    method: 'post',
+                    headers: {
+                        'Content-type': 'application/json'
+                    },
+                    body: JSON.stringify(authData)
+                }
+                )
+
+                if (!response.ok) {
+                    this.setState({ errorMessage: `Invalid credentials` })
+                    return
+                }
+
+                const userData = await response.json()
                 this.props.setUser({
                     token: userData.token,
                     userId: userData.userId,

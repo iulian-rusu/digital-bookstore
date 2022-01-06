@@ -23,5 +23,5 @@ class IdentityClient: WebServiceGatewaySupport() {
         return post(request)
     }
 
-    private inline fun <reified R> post(request: Any) = webServiceTemplate.marshalSendAndReceive(request) as R
+    inline fun <reified R> post(request: Any) = webServiceTemplate.marshalSendAndReceive(request) as R
 }

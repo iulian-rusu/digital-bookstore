@@ -1,5 +1,4 @@
-import React, { Component } from 'react'
-import { postUpdateUser } from '../../modules/SOAPRequest'
+import React, {Component} from 'react'
 import PastOrdersList from '../PastOrdersList/PastOrdersList'
 import './ProfilePage.css'
 
@@ -10,7 +9,8 @@ export default class ProfilePage extends Component {
         this.state = {
             newPassword: "",
             confirmPassword: "",
-            pastOrders: []
+            pastOrders: [],
+            errorMessage: ""
         }
 
         this.renderRole = () => {
@@ -32,21 +32,50 @@ export default class ProfilePage extends Component {
 
         this.submitForm = async event => {
             event.preventDefault()
-            if (this.state.newPassword !== this.state.confirmPassword) {
+            if (this.state.newPassword.length < 4) {
                 this.setState({
-                    newPassword: "",
-                    confirmPassword: ""
+                    errorMessage: "Password must have at least 4 characters"
                 })
                 return
             }
-            // send API request to update user
-            const response = postUpdateUser(this.state.user.userId, this.state.newPassword, this.state.user.token)
-            if (!response.ok) {
-                this.setState({ errorMessage: "Cannot authenticate" })
+
+            if (this.state.newPassword !== this.state.confirmPassword) {
+                this.setState({
+                    newPassword: "",
+                    confirmPassword: "",
+                    errorMessage: "Passwords don't match"
+                })
                 return
             }
 
-            const newUserData = extractAuthData(response)
+            const uri = `http://localhost:8083/api/proxy/identity/update`
+            const updateData = {
+                token: this.props.user.token,
+                userId: this.props.user.userId,
+                password: this.state.newPassword
+            }
+
+            const response = await fetch(uri, {
+                    method: 'post',
+                    headers: {
+                        'Content-type': 'application/json'
+                    },
+                    body: JSON.stringify(updateData)
+                }
+            )
+
+            if (!response.ok) {
+                this.setState({ errorMessage: `Cannot update: response status ${response.status}` })
+                return
+            }
+
+            const updatedData = await response.json()
+            this.props.updateUserToken(updatedData.token)
+            this.setState({
+                newPassword: "",
+                confirmPassword: "",
+                errorMessage: "Updated"
+            })
         }
     }
 
@@ -90,20 +119,21 @@ export default class ProfilePage extends Component {
                         </div>
                         <div>
                             <label>New Password</label>
-                            <input type="password" name="password" onChange={this.setNewPassword} />
+                            <input type="password" name="password" onChange={this.setNewPassword}/>
                         </div>
                         <div>
                             <label>Confirm Password</label>
-                            <input type="password" name="passwordConfirm" onChange={this.setConfirmPassword} />
+                            <input type="password" name="passwordConfirm" onChange={this.setConfirmPassword}/>
                         </div>
                     </fieldset>
                     <div>
                         <input type="submit" className='darkButton' value="Update" />
                     </div>
+                    <label>{this.state.errorMessage}</label>
                 </form>
                 {
                     (this.props.user.role == "ROLE_USER")
-                        ? <PastOrdersList user={this.props.user} pastOrders={this.state.pastOrders}/>
+                        ? <PastOrdersList user={this.props.user} pastOrders={this.state.pastOrders} />
                         : null
                 }
             </div>

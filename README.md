@@ -7,7 +7,7 @@ The application has the following modules:
 * `book-libary` - RESTful service for managing books
 * `orders` - RESTful service for managing client orders
 * `identity` - SOAP service for authentication/authorization of users
-* `shared` - module with request/response classes for user authorization
+* `shared` - common library for communicating with the SOAP service, also works as a proxy
 
 ## Steps to run the backend
 1. Setup databases:
@@ -40,7 +40,10 @@ The application has the following modules:
     IDENTITY_DB_NAME=
     IDENTITY_DB_USER_NAME=
     IDENTITY_DB_USER_PASSWORD=
-    
+   
+    # Environment for proxy service
+    PROXY_PORT=
+
     # Environment for ReactJs App
     CLIENT_HOST=
     CLIENT_PORT=

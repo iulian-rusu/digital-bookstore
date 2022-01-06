@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 import Header from '../Header/Header';
 import LoginPage from '../LoginPage/LoginPage';
 import BooksPage from '../BooksPage/BooksPage';
@@ -9,8 +9,9 @@ export default class App extends Component {
     constructor(props) {
         super(props)
 
+        const savedUser = localStorage.getItem("pos.bookstore.user")
         this.state = {
-            user: null,
+            user: savedUser,
             currentOrder: [],
             currentPage: "books"
         }
@@ -18,6 +19,11 @@ export default class App extends Component {
         this.setUser = u => {
             if (!u || !u.token) {
                 this.state.currentPage = "books"
+            }
+            if (u) {
+                localStorage.setItem("pos.bookstore.user", u)
+            } else {
+                localStorage.removeItem("pos.bookstore.user")
             }
 
             this.setState({ user: u })
@@ -67,7 +73,7 @@ export default class App extends Component {
             const currentPage = this.state.currentPage
             switch (currentPage) {
                 case "books": return <BooksPage user={this.state.user} orderItem={this.orderItem} />
-                case "profile": return  <ProfilePage user={this.state.user} updateUserToken={this.updateUserToken}/>
+                case "profile": return <ProfilePage user={this.state.user} updateUserToken={this.updateUserToken} />
                 case "cart": return <CartPage
                     user={this.state.user}
                     currentOrder={this.state.currentOrder}

@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 import BookTable from '../BookTable/BookTable'
 import './BooksPage.css'
 import DetailedBook from '../DetailedBook/DetailedBook'
@@ -96,7 +96,8 @@ export default class BooksPage extends Component {
         }
 
         this.loadPage = async () => {
-            const uri = `http://localhost:8080/api/book-library/books?page=${this.state.page}&items_per_page=${this.state.itemsPerPage}`
+            const query = `page=${this.state.page}&items_per_page=${this.state.itemsPerPage}`
+            const uri = `http://localhost:8080/api/book-library/books?${query}`
             const answer = await fetch(uri)
             if (!answer.ok) {
                 this.setState({
