@@ -4,7 +4,7 @@
 
 #bookViewForm > fieldset > div {
     align-items: center;
-    width: 400px;
+    width: 600px;
     margin: 5px;
 }
 
@@ -12,5 +12,5 @@
     float: right;
     clear: both;
     margin-right: 10px;
-    width: 230px;
+    width: 500px;
 }

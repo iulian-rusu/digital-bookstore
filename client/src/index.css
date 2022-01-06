@@ -3,6 +3,7 @@
     --darker-color: #15141f;
     --light-color: #ffffff;
     --grey-color: #eeeeee;
+    --dark-grey-color: #6a6a6a;
     --accent-color: #01b0d3;
     --bright-accent-color: #3adeff;
 }
@@ -62,6 +63,16 @@ body {
 .darkButton:hover {
     background-color: var(--darker-color);
     color: var(--bright-accent-color);
+}
+
+.darkButton[disabled] {
+    background-color: var(--grey-color);
+    color: var(--dark-grey-color);
+}
+
+.darkButton[disabled]:hover {
+    background-color: var(--grey-color);
+    color: var(--dark-grey-color);
 }
 
 .styledTable thead tr {

@@ -1,11 +1,14 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 import './DetailedBook.css'
 
 export default class DetailedBook extends Component {
     constructor(props) {
         super(props)
 
-        this.state =  this.props.book
+        this.state = {
+            ...this.props.book,
+            authors: ""
+        }
 
         this.submitForm = async event => {
             event.preventDefault()
@@ -29,6 +32,35 @@ export default class DetailedBook extends Component {
                 [field]: event.target.value
             })
         }
+    }
+
+    async componentDidMount() {
+        let book = this.state
+        const uri = `http://localhost:8080/api/book-library/books/${book.isbn}/authors`
+        const answer = await fetch(uri)
+        if (!answer.ok) {
+            console.log(answer.statusText)
+            return
+        }
+        const responseData = await answer.json()
+        if (responseData["_embedded"] === undefined) {
+            book["authors"] = ""
+            return
+        }
+
+        const authors = responseData['_embedded']['bookAuthorList']
+        let authorString = ""
+        for (let j = 0; j < authors.length; ++j) {
+            const uri = `http://localhost:8080/api/book-library/authors/${authors[j].authorId}`
+            const answer = await fetch(uri)
+            if (!answer.ok) {
+                console.log(answer.statusText)
+                continue
+            }
+            const responseData = await answer.json()
+            authorString += responseData.firstName + " " + responseData.lastName + "; "
+        }
+        this.setState({ authors: authorString })
     }
 
     render() {
@@ -71,7 +103,7 @@ export default class DetailedBook extends Component {
                         <div>
                             <label>Price</label>
                             <input onChange={this.updateBook('price')}
-                                type="text" disabled={isDisabled} value={this.state.price} />
+                                type="text" disabled={isDisabled} value={'$' + this.state.price} />
                         </div>
                         <div>
                             <label>Stock</label>

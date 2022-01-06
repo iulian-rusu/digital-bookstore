@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 import './BriefBook.css'
 
 export default class BriefBook extends Component {
@@ -40,6 +40,9 @@ export default class BriefBook extends Component {
                 case "ROLE_MANAGER": return (
                     <td><button className='darkButton bookTableButton' onClick={this.removeSelf}>Remove</button></td>
                 )
+                case "ROLE_ADMIN": return (
+                    <td><button className='darkButton' disabled>Remove</button></td>
+                )
             }
         }
     }
@@ -49,7 +52,8 @@ export default class BriefBook extends Component {
             <tr>
                 <td className="bookIsbn" onClick={this.openSelfDetails}><a href="#">{this.props.book.isbn}</a></td>
                 <td>{this.props.book.title}</td>
-                <td>{this.props.book.authors}</td>
+                <td>{this.props.book.genre}</td>
+                <td>${this.props.book.price}</td>
                 {this.renderButtons()}
             </tr>
         )

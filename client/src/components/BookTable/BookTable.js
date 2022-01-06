@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 import BriefBook from '../Book/BriefBook'
 import './BookTable.css'
 
@@ -23,12 +23,16 @@ export default class BookTable extends Component {
                         <th className='smallHeading'></th>
                     </>
                 )
+                case "ROLE_ADMIN": return (
+                    <>
+                     <th className='smallHeading'></th>
+                    </>
+                )
             }
         }
     }
 
     render() {
-        const booksToDisplay = this.props.books.filter(b => b[this.props.filter.field].includes(this.props.filter.value))
         return (
             <div className='BookTable flexColumn'>
                 <table id='books' className='styledTable'>
@@ -36,13 +40,14 @@ export default class BookTable extends Component {
                         <tr>
                             <th>ISBN</th>
                             <th>Title</th>
-                            <th>Authors</th>
+                            <th>Genre</th>
+                            <th>Price</th>
                             {this.renderHeading()}
                         </tr>
                     </thead>
                     <tbody>
                         {
-                            booksToDisplay.map(b => <BriefBook key={b.isbn}
+                            this.props.books.map(b => <BriefBook key={b.isbn}
                                 book={b}
                                 userRole={this.props.user.role}
                                 orderItem={this.props.orderItem}

@@ -14,7 +14,7 @@ export default class BooksPage extends Component {
             books: [],
             searchField: "",
             filter: {
-                field: "authors",
+                field: "title",
                 value: ""
             }
         }
@@ -26,22 +26,14 @@ export default class BooksPage extends Component {
         }
 
         this.setFilter = () => {
-            this.setState({
-                filter: {
-                    field: this.state.filter.field,
-                    value: this.state.searchField
-                },
-            })
+            this.state.filter.value = this.state.searchField
+            this.loadPage()
         }
 
         this.clearFilter = () => {
-            this.setState({
-                filter: {
-                    field: this.state.filter.field,
-                    value: ""
-                },
-                searchField: ""
-            })
+            this.state.filter.value = ""
+            this.state.searchField = ""
+            this.loadPage()
         }
 
         this.setField = event => {
@@ -96,7 +88,8 @@ export default class BooksPage extends Component {
         }
 
         this.loadPage = async () => {
-            const query = `page=${this.state.page}&items_per_page=${this.state.itemsPerPage}`
+            const filter = this.state.filter
+            const query = `page=${this.state.page}&items_per_page=${this.state.itemsPerPage}&${filter.field}=${filter.value}`
             const uri = `http://localhost:8080/api/book-library/books?${query}`
             const answer = await fetch(uri)
             if (!answer.ok) {
@@ -113,37 +106,8 @@ export default class BooksPage extends Component {
                 })
                 return
             }
-                
+
             const bookList = responseData['_embedded']['bookList']
-
-            for(let i = 0; i < bookList.length; ++i) {
-                let book = bookList[i]
-                const uri = `http://localhost:8080/api/book-library/books/${book.isbn}/authors`
-                const answer = await fetch(uri)
-                if (!answer.ok) {
-                    console.log(answer.statusText)
-                    continue
-                }
-                const responseData = await answer.json()
-                if (responseData["_embedded"] === undefined) {
-                    book["authors"] = ""
-                    continue
-                }
-
-                const authors = responseData['_embedded']['bookAuthorList']
-                let authorString = ""
-                for(let j = 0; j < authors.length; ++j) {
-                    const uri = `http://localhost:8080/api/book-library/authors/${authors[j].authorId}`
-                    const answer = await fetch(uri)
-                    if (!answer.ok) {
-                        console.log(answer.statusText)
-                        continue
-                    }
-                    const responseData = await answer.json()
-                    authorString += responseData.firstName + " " + responseData.lastName + "; "
-                }
-                book["authors"] = authorString
-            }
             this.setState({
                 books: bookList,
             })
@@ -154,7 +118,7 @@ export default class BooksPage extends Component {
                 const book = this.state.books.filter(b => b.isbn == this.state.detailedViewIsbn)[0]
                 return (
                     <>
-                        <DetailedBook book={book} userRole={this.props.user.role} user={this.props.user}/>
+                        <DetailedBook book={book} userRole={this.props.user.role} user={this.props.user} />
                         <button className="brightButton" onClick={() => this.setState({
                             detailedViewIsbn: null
                         })}>Back</button>
@@ -165,8 +129,8 @@ export default class BooksPage extends Component {
                 <>
                     <div id='searchDiv'>
                         <select id="filterType" onChange={this.setField}>
-                            <option>authors</option>
                             <option>title</option>
+                            <option>genre</option>
                         </select>
                         <input type='text'
                             id='searchInput'
@@ -184,7 +148,6 @@ export default class BooksPage extends Component {
                         user={this.props.user}
                         orderItem={this.orderBook}
                         removeItem={this.removeBook}
-                        filter={this.state.filter}
                     />
                 </>
             )
