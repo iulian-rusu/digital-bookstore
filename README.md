@@ -8,6 +8,7 @@ The application has the following modules:
 * `orders` - RESTful service for managing client orders
 * `identity` - SOAP service for authentication/authorization of users
 * `shared` - common library for communicating with the SOAP service, also works as a proxy
+* `client` - ReactJS web client for the application
 
 ## Steps to run the backend
 1. Setup databases:
@@ -49,5 +50,5 @@ The application has the following modules:
     CLIENT_PORT=
     ```
 3. Run the `identity` module first
-4. Then compile the `shared` module and run **install** it in the Maven repository
+4. Compile the `shared` module and **install** it in the local Maven repository
 5. Run the other modules
