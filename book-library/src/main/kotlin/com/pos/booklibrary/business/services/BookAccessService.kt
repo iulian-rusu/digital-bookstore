@@ -2,13 +2,11 @@ package com.pos.booklibrary.business.services
 
 import com.pos.booklibrary.api.controllers.BookController
 import com.pos.booklibrary.api.requests.StockUpdateRequest
-import com.pos.booklibrary.api.views.BookAuthorModelAssembler
+import com.pos.booklibrary.api.views.AuthorModelAssembler
 import com.pos.booklibrary.api.views.BookModelAssembler
-import com.pos.booklibrary.business.models.BasicBook
-import com.pos.booklibrary.business.models.Book
-import com.pos.booklibrary.business.models.BookAuthor
-import com.pos.booklibrary.business.models.BriefBook
+import com.pos.booklibrary.business.models.*
 import com.pos.booklibrary.business.services.interfaces.BookAccessInterface
+import com.pos.booklibrary.persistence.AuthorRepository
 import com.pos.booklibrary.persistence.BookAuthorRepository
 import com.pos.booklibrary.persistence.BookRepository
 import com.pos.booklibrary.persistence.GenericQueryRepository
@@ -39,28 +37,29 @@ class BookAccessService : IdentityAuthorized(), BookAccessInterface {
     private lateinit var bookAuthorRepository: BookAuthorRepository
 
     @Autowired
+    private lateinit var authorRepository: AuthorRepository
+
+    @Autowired
     private lateinit var genericQueryRepository: GenericQueryRepository
 
     @Autowired
     private lateinit var bookAssembler: BookModelAssembler
 
     @Autowired
-    private lateinit var bookAuthorAssembler: BookAuthorModelAssembler
+    private lateinit var authorAssembler: AuthorModelAssembler
 
     private val logger = LoggerFactory.getLogger(BookAccessService::class.java)
 
     override fun getAllBooks(query: SearchBookQuery): ResponseEntity<CollectionModel<EntityModel<BasicBook>>> {
         return try {
-            genericQueryRepository.find(query, BookRowMapper())
-                .map(bookAssembler::toModel)
-                .let { modelList ->
-                    ResponseEntity.ok(
-                        CollectionModel.of(
-                            modelList,
-                            linkTo(methodOn(BookController::class.java).getAllBooks(emptyMap())).withSelfRel()
-                        )
+            genericQueryRepository.find(query, BookRowMapper()).map(bookAssembler::toModel).let { modelList ->
+                ResponseEntity.ok(
+                    CollectionModel.of(
+                        modelList,
+                        linkTo(methodOn(BookController::class.java).getAllBooks(emptyMap())).withSelfRel()
                     )
-                }
+                )
+            }
         } catch (e: Exception) {
             logger.error("getAllBooks(): $e")
             ResponseEntity.status(HttpStatus.BAD_REQUEST).build()
@@ -68,22 +67,18 @@ class BookAccessService : IdentityAuthorized(), BookAccessInterface {
     }
 
     override fun getBook(isbn: String, verbose: Boolean): ResponseEntity<EntityModel<BasicBook>> =
-        bookRepository.findByIdOrNull(isbn)
-            ?.let {
-                val model = if (verbose) it else BriefBook(it)
-                ResponseEntity.ok(bookAssembler.toModel(model))
-            } ?: ResponseEntity.notFound().build()
+        bookRepository.findByIdOrNull(isbn)?.let {
+            val model = if (verbose) it else BriefBook(it)
+            ResponseEntity.ok(bookAssembler.toModel(model))
+        } ?: ResponseEntity.notFound().build()
 
     override fun postBook(newBook: Book, token: String?): ResponseEntity<EntityModel<BasicBook>> {
-        if (hasMissingFields(newBook))
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build()
+        if (hasMissingFields(newBook)) return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build()
 
         return try {
             ifAuthorizedAs(UserRole.MANAGER, token) {
                 val entityModel = bookAssembler.toModel(bookRepository.save(newBook))
-                ResponseEntity
-                    .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
-                    .body(entityModel)
+                ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(entityModel)
             }
         } catch (e: Exception) {
             logger.error("postBook(isbn=${newBook.getIsbn()}): $e")
@@ -93,8 +88,7 @@ class BookAccessService : IdentityAuthorized(), BookAccessInterface {
 
     override fun putBook(isbn: String, newBook: Book, token: String?): ResponseEntity<EntityModel<BasicBook>> {
         newBook.setIsbn(isbn)
-        if (hasMissingFields(newBook))
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build()
+        if (hasMissingFields(newBook)) return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build()
 
         return try {
             ifAuthorizedAs(UserRole.MANAGER, token) {
@@ -105,8 +99,7 @@ class BookAccessService : IdentityAuthorized(), BookAccessInterface {
                 } ?: run {
                     // Create a new Book
                     val entityModel = bookAssembler.toModel(bookRepository.save(newBook))
-                    ResponseEntity
-                        .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
+                    ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
                         .body(entityModel)
                 }
             }
@@ -128,20 +121,21 @@ class BookAccessService : IdentityAuthorized(), BookAccessInterface {
         }
     }
 
-    override fun getBookAuthors(isbn: String): CollectionModel<EntityModel<BookAuthor>> =
-        bookAuthorRepository.findBookAuthors(isbn)
-            .map(bookAuthorAssembler::toModel)
-            .let { modelList ->
-                CollectionModel.of(
-                    modelList,
-                    linkTo(methodOn(BookController::class.java).getBookAuthors(isbn)).withSelfRel()
-                )
-            }
+    override fun getBookAuthors(isbn: String): CollectionModel<EntityModel<Author>> =
+        bookAuthorRepository.findBookAuthors(isbn).mapNotNull {
+            authorRepository.findByIdOrNull(it.getAuthorId())
+        }.map(authorAssembler::toModel).let { modelList ->
+            CollectionModel.of(
+                modelList, linkTo(methodOn(BookController::class.java).getBookAuthors(isbn)).withSelfRel()
+            )
+        }
 
-    override fun getBookAuthor(isbn: String, index: Long): ResponseEntity<EntityModel<BookAuthor>> {
+    override fun getBookAuthor(isbn: String, index: Long): ResponseEntity<EntityModel<Author>> {
         return try {
             bookAuthorRepository.findBookAuthorByIndex(isbn, index)?.let { bookAuthor ->
-                ResponseEntity.ok(bookAuthorAssembler.toModel(bookAuthor))
+                authorRepository.findByIdOrNull(bookAuthor.getAuthorId())
+            }?.let {
+                ResponseEntity.ok(authorAssembler.toModel(it))
             } ?: ResponseEntity.notFound().build()
         } catch (e: Exception) {
             logger.error("getBookAuthor(isbn=$isbn, index=$index): $e")
@@ -150,10 +144,8 @@ class BookAccessService : IdentityAuthorized(), BookAccessInterface {
     }
 
     override fun postBookAuthors(
-        isbn: String,
-        bookAuthorIds: List<Long>,
-        token: String?
-    ): ResponseEntity<CollectionModel<EntityModel<BookAuthor>>> {
+        isbn: String, bookAuthorIds: List<Long>, token: String?
+    ): ResponseEntity<CollectionModel<EntityModel<Author>>> {
         return try {
             ifAuthorizedAs(UserRole.MANAGER, token) {
                 bookAuthorIds.mapIndexed { index, bookAuthorId ->
@@ -194,15 +186,13 @@ class BookAccessService : IdentityAuthorized(), BookAccessInterface {
     }
 
     override fun postStockUpdate(
-        request: StockUpdateRequest,
-        token: String?
+        request: StockUpdateRequest, token: String?
     ): ResponseEntity<CollectionModel<EntityModel<BasicBook>>> {
         return try {
             ifAuthorizedAs(UserRole.MANAGER, token) {
                 genericQueryRepository.execute(UpdateBookStockQuery(request))
                 val isbnList = request.items.map { it.isbn }
-                genericQueryRepository.find(SearchBookListQuery(isbnList), BookRowMapper())
-                    .map(bookAssembler::toModel)
+                genericQueryRepository.find(SearchBookListQuery(isbnList), BookRowMapper()).map(bookAssembler::toModel)
                     .let { modelList ->
                         ResponseEntity.ok(
                             CollectionModel.of(
@@ -219,7 +209,6 @@ class BookAccessService : IdentityAuthorized(), BookAccessInterface {
     }
 
     private fun hasMissingFields(book: Book) = book.run {
-        getIsbn().isEmpty() || getTitle().isEmpty() || getGenre().isEmpty() ||
-                getPublisher().isEmpty() || getPublishYear() <= 0
+        getIsbn().isEmpty() || getTitle().isEmpty() || getGenre().isEmpty() || getPublisher().isEmpty() || getPublishYear() <= 0
     }
 }

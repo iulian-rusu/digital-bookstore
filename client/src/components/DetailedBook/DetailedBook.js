@@ -44,21 +44,13 @@ export default class DetailedBook extends Component {
         }
         const responseData = await answer.json()
         if (responseData["_embedded"] === undefined) {
-            book["authors"] = ""
+            book["authors"] = "-"
             return
         }
-
-        const authors = responseData['_embedded']['bookAuthorList']
+        const authors = responseData['_embedded']['authorList']
         let authorString = ""
-        for (let j = 0; j < authors.length; ++j) {
-            const uri = `http://localhost:8080/api/book-library/authors/${authors[j].authorId}`
-            const answer = await fetch(uri)
-            if (!answer.ok) {
-                console.log(answer.statusText)
-                continue
-            }
-            const responseData = await answer.json()
-            authorString += responseData.firstName + " " + responseData.lastName + "; "
+        for (const author of authors) {
+            authorString += author.firstName + " " + author.lastName + "; "
         }
         this.setState({ authors: authorString })
     }

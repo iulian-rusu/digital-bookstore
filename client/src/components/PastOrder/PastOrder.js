@@ -3,7 +3,7 @@ import React, {Component} from 'react'
 export default class PastOrder extends Component {
     render() {
         const orderedItems = this.props.item.items
-        .map(i => <p><b>{i.isbn}</b> x {i.quantity} (${i.quantity * i.price})</p>)
+        .map(i => <span><b>{i.title}</b> x {i.quantity} (${i.quantity * i.price})<br /></span>)
         return (
             <tr>
                 <td>{this.props.item.orderId}</td>

@@ -49,8 +49,9 @@ class OrderResolutionService : IdentityAuthorized(), OrderResolutionInterface {
         bookList.forEachIndexed { index, book ->
             val isbn = request.items[index].isbn
             val price = book["price"].toString().toInt()
+            val title = book["title"].toString()
             val quantity = request.items[index].quantity
-            resolvedItems.add(BookOrderEntry(isbn, price, quantity))
+            resolvedItems.add(BookOrderEntry(isbn, title, price, quantity))
         }
 
         return BookOrder(null, DATE_FORMAT.format(Date()), resolvedItems, OrderStatus.PENDING)
