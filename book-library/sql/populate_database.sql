@@ -1,5 +1,5 @@
 INSERT INTO books(isbn, title, publisher, publish_year, genre, price, stock)
-VALUES ('1111-1111-111', 'Enigma Otiliei', 'RO', 1935, 'Drama', 100, 20),
+VALUES ('1111-1111-111', 'Some Book', 'ABCD', 1935, 'Some Editor', 100, 20),
        ('1111-1111-222', 'C++ Templates', 'CXX', 2004, 'Tech', 150, 30),
        ('1111-1111-333', 'The Lord Of The Rings', 'TK', 1986, 'Fantasy', 75, 10),
        ('1111-1111-444', 'The Silmarillion', 'TK', 1966, 'Fantasy', 85, 200),

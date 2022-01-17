@@ -13,6 +13,9 @@ class AuthorModelAssembler : RepresentationModelAssembler<Author, EntityModel<Au
     override fun toModel(author: Author) = EntityModel.of(
         author,
         linkTo(methodOn(AuthorController::class.java).getAuthor(author.getId())).withSelfRel(),
-        linkTo(methodOn(AuthorController::class.java).getAllAuthors(mapOf())).withRel("authors")
+        linkTo(methodOn(AuthorController::class.java).getAllAuthors(mapOf())).withRel("get all authors"),
+        linkTo(methodOn(AuthorController::class.java).postAuthor(author, null)).withRel("create author"),
+        linkTo(methodOn(AuthorController::class.java).putAuthor(author.getId(), author, null)).withRel("update author"),
+        linkTo(methodOn(AuthorController::class.java).deleteAuthor(author.getId(), null)).withRel("delete author")
     )
 }
