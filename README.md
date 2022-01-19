@@ -52,3 +52,36 @@ The application has the following modules:
 3. Run the `identity` module first
 4. Compile the `shared` module and **install** it in the local Maven repository
 5. Run the other modules
+
+# Screenshots
+
+## Login Page
+![](assets/login-page.png)
+
+## Home Page for normal user
+![](assets/home-user.png)
+
+## Detailed View of book for normal user
+![](assets/detailed-book-user.png)
+
+## Profile Page for normal user
+![](assets/profile-user.png)
+
+## Cart Page for normal user
+![](assets/cart-user.png)
+
+## Home Page for manager
+![](assets/home-manager.png)
+
+## Profile Page for manager
+![](assets/profile-manager.png)
+
+## Detailed View of book for manager
+![](assets/detailed-book-manager.png)
+
+## Home Page for admin
+![](assets/home-admin.png)
+
+## Profile Page for admin
+![](assets/profile-admin.png)
+

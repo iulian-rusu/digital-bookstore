@@ -56,7 +56,7 @@ export default class DetailedBook extends Component {
     }
 
     render() {
-        const isDisabled = this.props.userRole == "ROLE_USER"
+        const isDisabled = this.props.userRole != "ROLE_MANAGER"
         return (
             <div className='DetailedBook flexColumn alignCenter'>
                 <form id="bookViewForm" className="flexColumn alignCenter" onSubmit={this.submitForm}>
@@ -74,8 +74,7 @@ export default class DetailedBook extends Component {
                         </div>
                         <div>
                             <label>Authors</label>
-                            <input onChange={this.updateBook('authors')}
-                                type="text" disabled={isDisabled} value={this.state.authors} />
+                            <input type="text" disabled value={this.state.authors} />
                         </div>
                         <div>
                             <label>Genre</label>
