@@ -1,14 +1,14 @@
 # Digital Book Store Application
 
 This is an application that simulates a book shopping Web Service using 
-Spring Boot and ReactJs.
+Spring Boot and React.
 
 The application has the following modules:
 * `book-libary` - RESTful service for managing books
 * `orders` - RESTful service for managing client orders
 * `identity` - SOAP service for authentication/authorization of users
 * `shared` - common library for communicating with the SOAP service, also works as a proxy
-* `client` - ReactJS web client for the application
+* `client` - web client for the application written with React
 
 ## Steps to run the backend
 1. Setup databases:
@@ -45,7 +45,7 @@ The application has the following modules:
     # Environment for proxy service
     PROXY_PORT=
 
-    # Environment for ReactJs App
+    # Environment for React App
     CLIENT_HOST=
     CLIENT_PORT=
     ```
